@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erp.Data", "Erp.Data\Erp.Data.csproj", "{7B594727-78CC-43CD-8B71-5278B33255F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erp.API", "Erp.API\Erp.API.csproj", "{70C91865-B95B-492E-93EA-38A03F7B1C62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erp.Web", "Erp.Web\Erp.Web.csproj", "{4F463826-20D4-45C9-9B56-0EF30DEED771}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B594727-78CC-43CD-8B71-5278B33255F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B594727-78CC-43CD-8B71-5278B33255F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B594727-78CC-43CD-8B71-5278B33255F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B594727-78CC-43CD-8B71-5278B33255F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70C91865-B95B-492E-93EA-38A03F7B1C62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70C91865-B95B-492E-93EA-38A03F7B1C62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70C91865-B95B-492E-93EA-38A03F7B1C62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70C91865-B95B-492E-93EA-38A03F7B1C62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F463826-20D4-45C9-9B56-0EF30DEED771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F463826-20D4-45C9-9B56-0EF30DEED771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F463826-20D4-45C9-9B56-0EF30DEED771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F463826-20D4-45C9-9B56-0EF30DEED771}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {30614A9B-9D1E-4044-9FA2-7CB15201D57D}
+	EndGlobalSection
+EndGlobal

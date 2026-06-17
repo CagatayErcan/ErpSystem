@@ -1,0 +1,124 @@
+﻿@model Erp.Data.Entities.Stok
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Stok</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="StokKodu" class="control-label"></label>
+                <input asp-for="StokKodu" class="form-control" />
+                <span asp-validation-for="StokKodu" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StokAdi" class="control-label"></label>
+                <input asp-for="StokAdi" class="form-control" />
+                <span asp-validation-for="StokAdi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnaGrup" class="control-label"></label>
+                <input asp-for="AnaGrup" class="form-control" />
+                <span asp-validation-for="AnaGrup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AltGrup" class="control-label"></label>
+                <input asp-for="AltGrup" class="form-control" />
+                <span asp-validation-for="AltGrup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StokTipi" class="control-label"></label>
+                <input asp-for="StokTipi" class="form-control" />
+                <span asp-validation-for="StokTipi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnaBirim" class="control-label"></label>
+                <input asp-for="AnaBirim" class="form-control" />
+                <span asp-validation-for="AnaBirim" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VarsayilanTedarikci" class="control-label"></label>
+                <input asp-for="VarsayilanTedarikci" class="form-control" />
+                <span asp-validation-for="VarsayilanTedarikci" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AlternatifTedarikci" class="control-label"></label>
+                <input asp-for="AlternatifTedarikci" class="form-control" />
+                <span asp-validation-for="AlternatifTedarikci" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SonAlisFiyati" class="control-label"></label>
+                <input asp-for="SonAlisFiyati" class="form-control" />
+                <span asp-validation-for="SonAlisFiyati" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SatisFiyati" class="control-label"></label>
+                <input asp-for="SatisFiyati" class="form-control" />
+                <span asp-validation-for="SatisFiyati" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="KdvOrani" class="control-label"></label>
+                <input asp-for="KdvOrani" class="form-control" />
+                <span asp-validation-for="KdvOrani" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinimumStok" class="control-label"></label>
+                <input asp-for="MinimumStok" class="form-control" />
+                <span asp-validation-for="MinimumStok" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="KritikStok" class="control-label"></label>
+                <input asp-for="KritikStok" class="form-control" />
+                <span asp-validation-for="KritikStok" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiderKategorisi" class="control-label"></label>
+                <input asp-for="GiderKategorisi" class="form-control" />
+                <span asp-validation-for="GiderKategorisi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaliyetTuru" class="control-label"></label>
+                <input asp-for="MaliyetTuru" class="form-control" />
+                <span asp-validation-for="MaliyetTuru" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MasrafMerkezi" class="control-label"></label>
+                <input asp-for="MasrafMerkezi" class="form-control" />
+                <span asp-validation-for="MasrafMerkezi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Aciklama" class="control-label"></label>
+                <input asp-for="Aciklama" class="form-control" />
+                <span asp-validation-for="Aciklama" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OlusturmaTarihi" class="control-label"></label>
+                <input asp-for="OlusturmaTarihi" class="form-control" />
+                <span asp-validation-for="OlusturmaTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GuncellemeTarihi" class="control-label"></label>
+                <input asp-for="GuncellemeTarihi" class="form-control" />
+                <span asp-validation-for="GuncellemeTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Yeni Revizyon Oluştur";
+    var urunId = ViewBag.UrunId; // Controller'dan gelen ID'yi yakala
+}
+
+<h1>Yeni Revizyon Oluştur</h1>
+<hr />
+
+<form asp-action="CreateRevision" method="post">
+    <!-- UrunId'yi gizli alanla gönder -->
+    <input type="hidden" name="urunId" value="@urunId" />
+
+    <div class="form-group mb-3">
+        <label for="revizyonSebebi" class="control-label">Revizyon Sebebi</label>
+        <textarea name="revizyonSebebi" class="form-control" rows="4" required placeholder="Bu revizyonu neden oluşturdunuz? (Örn: Fire oranı güncellendi)"></textarea>
+        <span class="text-danger" data-valmsg-for="revizyonSebebi"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Revizyon Oluştur</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

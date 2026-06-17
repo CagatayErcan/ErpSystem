@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Erp.Data.Entities.MasrafMerkezi>
+
+@{
+    ViewData["Title"] = "Masraf Merkezleri";
+}
+
+<style>
+    #masrafTable { width: 100% !important; border-collapse: collapse !important; table-layout: fixed !important; }
+    #masrafTable thead th { font-size: 13px; font-weight: bold; text-align: center; background-color: #f2f2f2; border: 1px solid #ddd !important; padding: 8px 6px !important; word-wrap: break-word !important; white-space: normal !important; }
+    #masrafTable tbody td { font-size: 12px; border: 1px solid #ddd !important; padding: 6px !important; vertical-align: middle; background-color: #fff; word-wrap: break-word !important; white-space: normal !important; }
+    #masrafTable tbody tr:hover td { background-color: #f5f5f5; }
+    .filter-row th { padding: 4px !important; background-color: #fafafa; border: 1px solid #ddd !important; }
+    .filter-row input, .filter-row select { width: 100%; font-size: 11px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; }
+    .btn-custom { display: inline-block; padding: 8px 16px; margin: 0 4px; font-size: 13px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; }
+    .btn-excel-custom { background-color: #1e7e34; }
+    .btn-pdf-custom { background-color: #bd2130; }
+    .btn-print-custom { background-color: #545b62; }
+    .toolbar { margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .filter-badge { background-color: #007bff; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+
+    #masrafTable th:nth-child(1) { width: 80px; }
+    #masrafTable th:nth-child(2) { width: 150px; }
+    #masrafTable th:nth-child(3) { width: 120px; }
+    #masrafTable th:nth-child(4) { width: 70px; }
+    #masrafTable th:nth-child(5) { width: 100px; }
+</style>
+
+<h1>Masraf Merkezleri</h1>
+
+<div class="toolbar">
+    <a asp-action="Create" class="btn btn-primary btn-sm">Yeni Masraf Merkezi Ekle</a>
+    <button id="clearAllFilters" class="btn btn-secondary btn-sm">Tüm Filtreleri Temizle</button>
+    <button id="excelBtn" class="btn-excel-custom btn-custom">Excel</button>
+    <button id="pdfBtn" class="btn-pdf-custom btn-custom">PDF</button>
+    <button id="printBtn" class="btn-print-custom btn-custom">Yazdır</button>
+    <span id="filterCount" class="filter-badge">0 filtre aktif</span>
+</div>
+
+<div style="overflow-x: auto; width: 100%;">
+    <table id="masrafTable" class="table table-bordered" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Kod</th>
+                <th>Ad</th>
+                <th>Üst Masraf Merkezi</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+            </tr>
+            <tr class="filter-row">
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="0" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="1" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="2" /></th>
+                <th><select class="column-filter" data-column="3"><option value="">Tümü</option><option>Aktif</option><option>Pasif</option></select></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Kod</td>
+                    <td>@item.Ad</td>
+                    <td>@item.UstMasrafMerkezi</td>
+                    <td>@item.Durum</td>
+                    <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a> <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a> <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+
+    <script src="~/js/masraf.js"></script>
+}

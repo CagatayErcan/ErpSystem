@@ -1,0 +1,138 @@
+﻿@model Erp.Data.Entities.Urun
+
+@{
+    ViewData["Title"] = "BOM Detay - " + Model.UrunAdi;
+    var bom = ViewBag.Bom as Erp.Data.Entities.UrunBom;
+    var bomTarihce = ViewBag.BomTarihce as List<Erp.Data.Entities.UrunBom>;
+}
+
+<h1>Malzeme Reçetesi (BOM)</h1>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4>@Model.UrunKodu - @Model.UrunAdi</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3"><strong>Alaşım:</strong> @Model.Alasim</div>
+            <div class="col-md-3"><strong>Alaşım Normu:</strong> @Model.AlasimNormu</div>
+            <div class="col-md-3"><strong>Fire Oranı:</strong> @Model.FireOrani %</div>
+            <div class="col-md-3"><strong>Revizyon:</strong> @(bom?.RevizyonNo ?? "-")</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-6"><strong>Son Değişiklik:</strong> @(bom?.RevizyonTarihi.ToString("dd.MM.yyyy HH:mm") ?? "-")</div>
+            <div class="col-md-6"><strong>Oluşturan:</strong> @(bom?.Olusturan ?? "-")</div>
+        </div>
+        @if (!string.IsNullOrEmpty(bom?.RevizyonSebebi))
+        {
+            <div class="row mt-2">
+                <div class="col-md-12"><strong>Revizyon Sebebi:</strong> @bom.RevizyonSebebi</div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- BOM Malzeme Listesi -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5>Kullanılan Malzemeler</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Stok Kodu</th>
+                    <th>Stok Adı</th>
+                    <th>Miktar</th>
+                    <th>Birim</th>
+                    <th>Fire Oranı</th>
+                    <th>Kaynak</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ergitme Reçeteleri -->
+                @foreach (var item in Model.ErgitmeReceteleri)
+                {
+                    <tr>
+                        <td>@item.StokKodu</td>
+                        <td>@item.StokAdi</td>
+                        <td>@item.Miktar</td>
+                        <td>@item.Birim</td>
+                        <td>@Model.FireOrani %</td>
+                        <td><span class="badge bg-primary">Ergitme</span></td>
+                    </tr>
+                }
+
+                <!-- Maça Reçeteleri -->
+                @foreach (var item in Model.MacaReceteleri)
+                {
+                    <tr>
+                        <td>@item.MacaKodu</td>
+                        <td>@item.MacaAdi</td>
+                        <td>@item.KumTuketimi</td>
+                        <td>KG</td>
+                        <td>@Model.FireOrani %</td>
+                        <td><span class="badge bg-warning">Maça</span></td>
+                    </tr>
+                }
+
+                <!-- İşleme Reçeteleri -->
+                @foreach (var item in Model.IslemeReceteleri)
+                {
+                    <tr>
+                        <td>@item.StokKodu</td>
+                        <td>@item.StokAdi</td>
+                        <td>@item.TakimTuketimi</td>
+                        <td>ADET</td>
+                        <td>@Model.FireOrani %</td>
+                        <td><span class="badge bg-info">İşleme</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Revizyon Tarihçesi -->
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5>Revizyon Tarihçesi</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Revizyon No</th>
+                    <th>Tarih</th>
+                    <th>Sebep</th>
+                    <th>Oluşturan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (bomTarihce != null && bomTarihce.Any())
+                {
+                    foreach (var item in bomTarihce)
+                    {
+                        <tr>
+                            <td><strong>@item.RevizyonNo</strong></td>
+                            <td>@item.RevizyonTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@item.RevizyonSebebi</td>
+                            <td>@item.Olusturan</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">Henüz revizyon oluşturulmamış.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+    <a asp-action="CreateRevision" asp-route-urunId="@Model.Id" class="btn btn-warning">Yeni Revizyon Oluştur</a>
+</div>

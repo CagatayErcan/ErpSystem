@@ -1,0 +1,240 @@
+﻿@model Erp.Data.Entities.Urun
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Urun</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UrunKodu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UrunKodu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UrunAdi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UrunAdi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Alasim)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Alasim)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AlasimNormu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AlasimNormu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UrunAgirligi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UrunAgirligi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UrunKalipNo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UrunKalipNo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.KalipCinsi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.KalipCinsi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UrunParcaAdeti)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UrunParcaAdeti)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.KalipCevrimSuresi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.KalipCevrimSuresi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BesleyiciStokKodu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BesleyiciStokKodu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BesleyiciAdeti)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BesleyiciAdeti)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Aciklama)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Aciklama)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OlusturmaTarihi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OlusturmaTarihi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GuncellemeTarihi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GuncellemeTarihi)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+    <!-- Ergitme Reçeteleri -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5>Ergitme Reçetesi - Hammadde</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Stok Tipi</th>
+                        <th>Stok Adı</th>
+                        <th>Stok Kodu</th>
+                        <th>Miktar</th>
+                        <th>Birim</th>
+                        <th>Elektrik (kWh)</th>
+                        <th>Ergitme Süresi (dk)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ErgitmeReceteleri != null && Model.ErgitmeReceteleri.Any())
+                    {
+                        foreach (var item in Model.ErgitmeReceteleri)
+                        {
+                            <tr>
+                                <td>@item.StokTipi</td>
+                                <td>@item.StokAdi</td>
+                                <td>@item.StokKodu</td>
+                                <td>@item.Miktar</td>
+                                <td>@item.Birim</td>
+                                <td>@item.BirimElektrikTuketimi</td>
+                                <td>@item.ErgitmeSuresi</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Henüz ergitme reçetesi tanımlanmamış.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Maça Reçeteleri -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5>Maça Reçetesi</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Maça Adı</th>
+                        <th>Maça Kodu</th>
+                        <th>Kullanım Adedi</th>
+                        <th>Maça Cinsi</th>
+                        <th>Kum (kg)</th>
+                        <th>Reçine (kg)</th>
+                        <th>CO₂ (kg)</th>
+                        <th>Amin Gazı (lt)</th>
+                        <th>Bezir Yağı (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MacaReceteleri != null && Model.MacaReceteleri.Any())
+                    {
+                        foreach (var item in Model.MacaReceteleri)
+                        {
+                            <tr>
+                                <td>@item.MacaAdi</td>
+                                <td>@item.MacaKodu</td>
+                                <td>@item.MacaKullanimAdedi</td>
+                                <td>@item.MacaCinsi</td>
+                                <td>@item.KumTuketimi</td>
+                                <td>@item.RecineTuketimi</td>
+                                <td>@item.Co2Tuketimi</td>
+                                <td>@item.AminGazi</td>
+                                <td>@item.BezirYagiTuketimi</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">Henüz maça reçetesi tanımlanmamış.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- İşleme Reçeteleri -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5>Torna ve İşleme Merkezi Reçetesi</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Op. Sırası</th>
+                        <th>Op. Kodu</th>
+                        <th>Op. Adı</th>
+                        <th>İş Merkezi</th>
+                        <th>Takım Tüketimi</th>
+                        <th>Stok Kodu</th>
+                        <th>Stok Adı</th>
+                        <th>Elektrik (kWh)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.IslemeReceteleri != null && Model.IslemeReceteleri.Any())
+                    {
+                        foreach (var item in Model.IslemeReceteleri)
+                        {
+                            <tr>
+                                <td>@item.OperasyonSırası</td>
+                                <td>@item.OperasyonKodu</td>
+                                <td>@item.OperasyonAdi</td>
+                                <td>@item.IsMerkezi</td>
+                                <td>@item.TakimTuketimi</td>
+                                <td>@item.StokKodu</td>
+                                <td>@item.StokAdi</td>
+                                <td>@item.BirimElektrikTuketimi</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">Henüz işleme reçetesi tanımlanmamış.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

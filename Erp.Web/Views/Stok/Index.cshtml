@@ -1,0 +1,210 @@
+﻿@model IEnumerable<Erp.Data.Entities.Stok>
+
+@{
+    ViewData["Title"] = "Stok Kartları";
+}
+
+<style>
+    #stokTable {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+    }
+
+        #stokTable thead th {
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd !important;
+            padding: 8px 6px !important;
+            word-wrap: break-word !important;
+            white-space: normal !important;
+        }
+
+        #stokTable tbody td {
+            font-size: 12px;
+            border: 1px solid #ddd !important;
+            padding: 6px !important;
+            vertical-align: middle;
+            background-color: #fff;
+            word-wrap: break-word !important;
+            white-space: normal !important;
+        }
+
+        #stokTable tbody tr:hover td {
+            background-color: #f5f5f5;
+        }
+
+    .filter-row th {
+        padding: 4px !important;
+        background-color: #fafafa;
+        border: 1px solid #ddd !important;
+    }
+
+    .filter-row input, .filter-row select {
+        width: 100%;
+        font-size: 11px;
+        padding: 4px 6px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .btn-custom {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 0 4px;
+        font-size: 13px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .btn-excel-custom {
+        background-color: #1e7e34;
+    }
+
+    .btn-pdf-custom {
+        background-color: #bd2130;
+    }
+
+    .btn-print-custom {
+        background-color: #545b62;
+    }
+
+    .toolbar {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-badge {
+        background-color: #007bff;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    /* Sütun genişlikleri */
+    #stokTable th:nth-child(1) {
+        width: 80px;
+    }
+    /* Stok Kodu */
+    #stokTable th:nth-child(2) {
+        width: 150px;
+    }
+    /* Stok Adı */
+    #stokTable th:nth-child(3) {
+        width: 80px;
+    }
+    /* Stok Tipi */
+    #stokTable th:nth-child(4) {
+        width: 70px;
+    }
+    /* Birim */
+    #stokTable th:nth-child(5) {
+        width: 80px;
+    }
+    /* Son Alış Fiyatı */
+    #stokTable th:nth-child(6) {
+        width: 80px;
+    }
+    /* Satış Fiyatı */
+    #stokTable th:nth-child(7) {
+        width: 60px;
+    }
+    /* KDV */
+    #stokTable th:nth-child(8) {
+        width: 80px;
+    }
+    /* Min Stok */
+    #stokTable th:nth-child(9) {
+        width: 80px;
+    }
+    /* Kritik Stok */
+    #stokTable th:nth-child(10) {
+        width: 100px;
+    }
+    /* Tedarikçi */
+    #stokTable th:nth-child(11) {
+        width: 100px;
+    }
+    /* İşlemler */
+</style>
+
+<h1>Stok Kartları</h1>
+
+<div class="toolbar">
+    <a asp-action="Create" class="btn btn-primary btn-sm">Yeni Stok Ekle</a>
+    <button id="clearAllFilters" class="btn btn-secondary btn-sm">Tüm Filtreleri Temizle</button>
+    <button id="excelBtn" class="btn-excel-custom btn-custom">Excel</button>
+    <button id="pdfBtn" class="btn-pdf-custom btn-custom">PDF</button>
+    <button id="printBtn" class="btn-print-custom btn-custom">Yazdır</button>
+    <span id="filterCount" class="filter-badge">0 filtre aktif</span>
+</div>
+
+<div style="overflow-x: auto; width: 100%;">
+    <table id="stokTable" class="table table-bordered" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Stok Kodu</th>
+                <th>Stok Adı</th>
+                <th>Stok Tipi</th>
+                <th>Birim</th>
+                <th>Son Alış Fiyatı</th>
+                <th>Satış Fiyatı</th>
+                <th>KDV %</th>
+                <th>Min Stok</th>
+                <th>Kritik Stok</th>
+                <th>Varsayılan Tedarikçi</th>
+                <th>İşlemler</th>
+            </tr>
+            <tr class="filter-row">
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="0" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="1" /></th>
+                <th><select class="column-filter" data-column="2"><option value="">Tümü</option><option>Hammadde</option><option>Sarf</option><option>Hizmet</option><option>Demirbaş</option><option>Yarı Mamul</option><option>Mamul</option></select></th>
+                <th><select class="column-filter" data-column="3"><option value="">Tümü</option><option>KG</option><option>ADET</option><option>LT</option><option>M3</option><option>SAAT</option></select></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="4" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="5" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="6" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="7" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="8" /></th>
+                <th><input type="text" class="column-filter" placeholder="Filtre..." data-column="9" /></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.StokKodu</td>
+                    <td>@item.StokAdi</td>
+                    <td>@item.StokTipi</td>
+                    <td>@item.AnaBirim</td>
+                    <td>@item.SonAlisFiyati.ToString("N2")</td>
+                    <td>@item.SatisFiyati.ToString("N2")</td>
+                    <td>@item.KdvOrani.ToString("N2")</td>
+                    <td>@item.MinimumStok.ToString("N2")</td>
+                    <td>@item.KritikStok.ToString("N2")</td>
+                    <td>@item.VarsayilanTedarikci</td>
+                    <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a> <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a> <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+
+    <script src="~/js/stok.js"></script>
+}

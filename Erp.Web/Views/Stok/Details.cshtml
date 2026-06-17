@@ -1,0 +1,132 @@
+﻿@model Erp.Data.Entities.Stok
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Stok</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StokKodu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StokKodu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StokAdi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StokAdi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AnaGrup)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnaGrup)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AltGrup)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AltGrup)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StokTipi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StokTipi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AnaBirim)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AnaBirim)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.VarsayilanTedarikci)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.VarsayilanTedarikci)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AlternatifTedarikci)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AlternatifTedarikci)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SonAlisFiyati)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SonAlisFiyati)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SatisFiyati)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SatisFiyati)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.KdvOrani)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.KdvOrani)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MinimumStok)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MinimumStok)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.KritikStok)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.KritikStok)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GiderKategorisi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GiderKategorisi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MaliyetTuru)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MaliyetTuru)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MasrafMerkezi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MasrafMerkezi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Aciklama)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Aciklama)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OlusturmaTarihi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OlusturmaTarihi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GuncellemeTarihi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GuncellemeTarihi)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

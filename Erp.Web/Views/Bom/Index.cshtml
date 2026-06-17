@@ -1,0 +1,155 @@
+﻿@model IEnumerable<Erp.Data.Entities.Urun>
+
+@{
+    ViewData["Title"] = "Malzeme Reçeteleri (BOM)";
+}
+
+<style>
+    #bomTable th {
+        font-size: 12px;
+        font-weight: bold;
+        text-align: center;
+        background-color: #f2f2f2;
+        border: 1px solid #ddd !important;
+        padding: 6px 4px !important;
+        white-space: nowrap;
+    }
+    #bomTable td {
+        font-size: 11px;
+        border: 1px solid #ddd !important;
+        padding: 4px !important;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .toolbar { margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .filter-badge { background-color: #007bff; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+</style>
+
+<h1>Malzeme Reçeteleri (BOM)</h1>
+
+<div class="toolbar">
+    <span id="filterCount" class="filter-badge">0 ürün</span>
+</div>
+
+<div style="overflow-x: auto; width: 100%;">
+    <table id="bomTable" class="table table-bordered" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Ürün Kodu</th>
+            <th>Ürün Adı</th>
+            <th>Alaşım</th>
+            <th>Alaşım Normu</th>
+            <th>%Fire Oranı</th>
+            <th>Revizyon No</th>
+            <th>Stok Kodu</th>
+            <th>Stok Adı</th>
+            <th>Miktar</th>
+            <th>Birim</th>
+            <th>Masraf Merkezi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var urun in Model)
+        {
+            var sonBom = urun.UrunBomlar?.OrderByDescending(b => b.RevizyonTarihi).FirstOrDefault();
+            var revizyonNo = sonBom?.RevizyonNo ?? "-";
+            var malzemeler = new List<(string stokKodu, string stokAdi, decimal miktar, string birim, string masrafMerkezi)>();
+
+            // Ergitme Reçeteleri
+            foreach (var item in urun.ErgitmeReceteleri ?? Enumerable.Empty<Erp.Data.Entities.UrunErgitmeRecete>())
+            {
+                malzemeler.Add((item.StokKodu ?? "-", item.StokAdi ?? "-", item.Miktar, item.Birim ?? "-", "Ergitme"));
+            }
+
+            // Maça Reçeteleri
+            foreach (var item in urun.MacaReceteleri ?? Enumerable.Empty<Erp.Data.Entities.UrunMacaRecete>())
+            {
+                malzemeler.Add((item.MacaKodu ?? "-", item.MacaAdi ?? "-", item.KumTuketimi, "KG", "Maça"));
+            }
+
+            // İşleme Reçeteleri
+            foreach (var item in urun.IslemeReceteleri ?? Enumerable.Empty<Erp.Data.Entities.UrunIslemeRecete>())
+            {
+                malzemeler.Add((item.StokKodu ?? "-", item.StokAdi ?? "-", item.TakimTuketimi, "ADET", "İşleme"));
+            }
+
+            if (!malzemeler.Any())
+            {
+                <tr>
+                    <td>@urun.UrunKodu</td>
+                    <td>@urun.UrunAdi</td>
+                    <td>@urun.Alasim</td>
+                    <td>@urun.AlasimNormu</td>
+                    <td>@urun.FireOrani.ToString("N2")</td>
+                    <td>@revizyonNo</td>
+                    <td colspan="5" style="text-align:center; color:#999;">Henüz malzeme tanımlanmamış</td>
+                </tr>
+            }
+            else
+            {
+                var ilk = true;
+                foreach (var malzeme in malzemeler)
+                {
+                    <tr>
+                        @if (ilk)
+                        {
+                            <td>@urun.UrunKodu</td>
+                            <td>@urun.UrunAdi</td>
+                            <td>@urun.Alasim</td>
+                            <td>@urun.AlasimNormu</td>
+                            <td>@urun.FireOrani.ToString("N2")</td>
+                            <td>@revizyonNo</td>
+                            ilk = false;
+                        }
+                        else
+                        {
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        }
+                        <td>@malzeme.stokKodu</td>
+                        <td>@malzeme.stokAdi</td>
+                        <td>@malzeme.miktar</td>
+                        <td>@malzeme.birim</td>
+                        <td>@malzeme.masrafMerkezi</td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+    <script>
+        $(document).ready(function () {
+            var table = $('#bomTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                scrollX: true,
+                scrollY: '70vh',
+                scrollCollapse: true,
+                autoWidth: false,
+                language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
+                dom: 'frtip',
+                pageLength: 25
+            });
+
+            // Toplam satır sayısını göster
+            var totalRows = table.rows({ search: 'applied' }).count();
+            $('#filterCount').text(totalRows + ' satır');
+            
+            // Filtreleme sonucu sayacı güncelle
+            table.on('draw', function () {
+                var filteredRows = table.rows({ search: 'applied' }).count();
+                $('#filterCount').text(filteredRows + ' satır');
+            });
+        });
+    </script>
+}

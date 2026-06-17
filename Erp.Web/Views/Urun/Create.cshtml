@@ -1,0 +1,387 @@
+﻿@model Erp.Data.Entities.Urun
+
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+}
+
+<h1>Yeni Ürün Ekle</h1>
+<hr />
+
+<form asp-action="Create" method="post" id="urunForm">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- ================================================ -->
+    <!-- 1. ÜRÜN KARTI BİLGİLERİ -->
+    <!-- ================================================ -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Ürün Kartı</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="UrunKodu" class="control-label"></label>
+                        <input asp-for="UrunKodu" class="form-control" />
+                        <span asp-validation-for="UrunKodu" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="UrunAdi" class="control-label"></label>
+                        <input asp-for="UrunAdi" class="form-control" />
+                        <span asp-validation-for="UrunAdi" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Alasim" class="control-label"></label>
+                        <select asp-for="Alasim" class="form-control" id="Alasim">
+                            <option value="">Seçiniz</option>
+                            <option value="PİK">PİK</option>
+                            <option value="SFERO">SFERO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="AlasimNormu" class="control-label"></label>
+                        <select asp-for="AlasimNormu" class="form-control" id="AlasimNormu">
+                            <option value="">Önce Alaşım Seçiniz</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="UrunAgirligi" class="control-label"></label>
+                        <input asp-for="UrunAgirligi" class="form-control" />
+                        <span asp-validation-for="UrunAgirligi" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="UrunKalipNo" class="control-label"></label>
+                        <input asp-for="UrunKalipNo" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="KalipCinsi" class="control-label"></label>
+                        <select asp-for="KalipCinsi" class="form-control">
+                            <option value="">Seçiniz</option>
+                            <option value="REÇİNELİ">REÇİNELİ</option>
+                            <option value="BENTONİTLİ">BENTONİTLİ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="UrunParcaAdeti" class="control-label"></label>
+                        <input asp-for="UrunParcaAdeti" class="form-control" type="number" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="KalipCevrimSuresi" class="control-label"></label>
+                        <input asp-for="KalipCevrimSuresi" class="form-control" type="number" placeholder="dk" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="BesleyiciStokKodu" class="control-label"></label>
+                        <input asp-for="BesleyiciStokKodu" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="BesleyiciAdeti" class="control-label"></label>
+                        <input asp-for="BesleyiciAdeti" class="form-control" type="number" />
+                        <span asp-validation-for="BesleyiciAdeti" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="FireOrani" class="control-label"></label>
+                        <input asp-for="FireOrani" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="FireOrani" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Aciklama" class="control-label"></label>
+                <textarea asp-for="Aciklama" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================ -->
+    <!-- 2. ERGİTME REÇETESİ -->
+    <!-- ================================================ -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Ergitme Reçetesi - Hammadde</h5>
+            <button type="button" class="btn btn-light btn-sm" onclick="addErgitmeRow()">+ Satır Ekle</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="ergitmeTable">
+                    <thead>
+                        <tr>
+                            <th>Stok Tipi</th>
+                            <th>Stok Adı</th>
+                            <th>Stok Kodu</th>
+                            <th>Miktar</th>
+                            <th>Birim</th>
+                            <th>Elektrik (kWh)</th>
+                            <th>Ergitme Süresi (dk)</th>
+                            <th style="width:50px;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JavaScript ile satır eklenecek -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================ -->
+    <!-- 3. MAÇA REÇETESİ -->
+    <!-- ================================================ -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Maça Reçetesi</h5>
+            <button type="button" class="btn btn-dark btn-sm" onclick="addMacaRow()">+ Satır Ekle</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="macaTable">
+                    <thead>
+                        <tr>
+                            <th>Maça Adı</th>
+                            <th>Maça Kodu</th>
+                            <th>Kullanım Adedi</th>
+                            <th>Maça Cinsi</th>
+                            <th>Kum (kg)</th>
+                            <th>Reçine (kg)</th>
+                            <th>CO₂ (kg)</th>
+                            <th>Amin Gazı (lt)</th>
+                            <th>Bezir Yağı (kg)</th>
+                            <th style="width:50px;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JavaScript ile satır eklenecek -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================ -->
+    <!-- 4. TORNA VE İŞLEME MERKEZİ REÇETESİ -->
+    <!-- ================================================ -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Torna ve İşleme Merkezi Reçetesi</h5>
+            <button type="button" class="btn btn-light btn-sm" onclick="addIslemeRow()">+ Satır Ekle</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="islemeTable">
+                    <thead>
+                        <tr>
+                            <th>Op. Sırası</th>
+                            <th>Op. Kodu</th>
+                            <th>Op. Adı</th>
+                            <th>İş Merkezi</th>
+                            <th>Takım Tüketimi</th>
+                            <th>Stok Kodu</th>
+                            <th>Stok Adı</th>
+                            <th>Elektrik (kWh)</th>
+                            <th style="width:50px;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JavaScript ile satır eklenecek -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================ -->
+    <!-- 5. KAYDET BUTONU -->
+    <!-- ================================================ -->
+    <div class="form-group mt-3">
+        <input type="submit" value="Ürünü Kaydet" class="btn btn-primary btn-lg" />
+        <a asp-action="Index" class="btn btn-secondary btn-lg">Listeye Dön</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Enter tuşunu engelle
+            $('form').on('keydown', 'input, select, textarea', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // ==========================================
+            // STOK TİPİNE GÖRE STOK ADLARINI FİLTRELE
+            // ==========================================
+            $(document).on('change', '.stok-tipi', function () {
+                var row = $(this).closest('tr');
+                var stokTipi = $(this).val();
+                var stokAdiSelect = row.find('.stok-adi');
+                var stokKoduInput = row.find('.stok-kodu');
+
+                // Stok adı select'ini temizle
+                stokAdiSelect.empty();
+                stokAdiSelect.append('<option value="">Seçiniz</option>');
+
+                if (stokTipi) {
+                    // AJAX ile stokları getir
+                    $.ajax({
+                        url: '/Urun/GetStoklarByTip',
+                        type: 'GET',
+                        data: { stokTipi: stokTipi },
+                        success: function (data) {
+                            $.each(data, function (index, item) {
+                                stokAdiSelect.append('<option value="' + item.stokAdi + '" data-stokkodu="' + item.stokKodu + '">' + item.stokAdi + '</option>');
+                            });
+                        },
+                        error: function () {
+                            alert('Stoklar yüklenirken bir hata oluştu.');
+                        }
+                    });
+                }
+            });
+
+            // Stok adı seçildiğinde stok kodunu otomatik doldur
+            $(document).on('change', '.stok-adi', function () {
+                var row = $(this).closest('tr');
+                var selectedOption = $(this).find('option:selected');
+                var stokKodu = selectedOption.data('stokkodu');
+                row.find('.stok-kodu').val(stokKodu || '');
+            });
+
+            // ==========================================
+            // ALAŞIM NORMLARI (Dinamik Filtreleme)
+            // ==========================================
+            var alasimNormlari = {
+                'PİK': ['GG20', 'GG30', 'GG40'],
+                'SFERO': ['GGG40', 'GGG50', 'GGG60']
+            };
+
+            $('#Alasim').change(function () {
+                var selectedAlasim = $(this).val();
+                var $normSelect = $('#AlasimNormu');
+                $normSelect.empty();
+                if (selectedAlasim && alasimNormlari[selectedAlasim]) {
+                    $normSelect.append('<option value="">Alaşım Normu Seçiniz</option>');
+                    $.each(alasimNormlari[selectedAlasim], function (index, norm) {
+                        $normSelect.append('<option value="' + norm + '">' + norm + '</option>');
+                    });
+                } else {
+                    $normSelect.append('<option value="">Önce Alaşım Seçiniz</option>');
+                }
+            });
+        });
+
+        function addErgitmeRow() {
+            var table = document.getElementById('ergitmeTable').getElementsByTagName('tbody')[0];
+            var row = table.insertRow();
+            row.innerHTML = `
+                <td>
+                    <select class="form-control form-control-sm stok-tipi" data-row="ergitme" name="ErgitmeReceteleri[0].StokTipi">
+                        <option value="">Seçiniz</option>
+                        <option value="Hammadde">Hammadde</option>
+                        <option value="Sarf">Sarf</option>
+                        <option value="Hizmet">Hizmet</option>
+                        <option value="Demirbaş">Demirbaş</option>
+                        <option value="Yarı Mamul">Yarı Mamul</option>
+                        <option value="Mamul">Mamul</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control form-control-sm stok-adi" data-row="ergitme" name="ErgitmeReceteleri[0].StokAdi">
+                        <option value="">Önce Stok Tipi Seçin</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm stok-kodu" name="ErgitmeReceteleri[0].StokKodu" readonly />
+                </td>
+                <td>
+                    <input type="number" step="any" name="ErgitmeReceteleri[0].Miktar" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <select name="ErgitmeReceteleri[0].Birim" class="form-control form-control-sm">
+                        <option value="KG">KG</option>
+                        <option value="ADET">ADET</option>
+                        <option value="LT">LT</option>
+                    </select>
+                </td>
+                        <td>
+            <input type="number" step="any" name="ErgitmeReceteleri[0].BirimElektrikTuketimi" class="form-control form-control-sm" value="0" />
+            </td>
+            <td>
+            <input type="number" name="ErgitmeReceteleri[0].ErgitmeSuresi" class="form-control form-control-sm" value="0" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm btn-satir-sil">Sil</button>
+                </td>
+            `;
+        }
+
+        function addMacaRow() {
+            var table = document.getElementById('macaTable').getElementsByTagName('tbody')[0];
+            var row = table.insertRow();
+            row.innerHTML = `
+                        <td><input type="text" name="MacaReceteleri[0].MacaAdi" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="MacaReceteleri[0].MacaKodu" class="form-control form-control-sm" /></td>
+                        <td><input type="number" name="MacaReceteleri[0].MacaKullanimAdedi" class="form-control form-control-sm" /></td>
+                        <td><select name="MacaReceteleri[0].MacaCinsi" class="form-control form-control-sm"><option value="">Seçiniz</option><option value="REÇİNELİ">REÇİNELİ</option><option value="COLD BOX">COLD BOX</option><option value="HOT BOX">HOT BOX</option><option value="BEZİR YAĞLI">BEZİR YAĞLI</option></select></td>
+                        <td><input type="number" step="any" name="MacaReceteleri[0].KumTuketimi" class="form-control form-control-sm" /></td>
+                        <td><input type="number" step="any" name="MacaReceteleri[0].RecineTuketimi" class="form-control form-control-sm" /></td>
+                        <td><input type="number" step="any" name="MacaReceteleri[0].Co2Tuketimi" class="form-control form-control-sm" /></td>
+                        <td><input type="number" step="any" name="MacaReceteleri[0].AminGazi" class="form-control form-control-sm" /></td>
+                        <td><input type="number" step="any" name="MacaReceteleri[0].BezirYagiTuketimi" class="form-control form-control-sm" /></td>
+                        <td><button type="button" class="btn btn-danger btn-sm btn-satir-sil">Sil</button></td>
+                    `;
+        }
+
+        function addIslemeRow() {
+            var table = document.getElementById('islemeTable').getElementsByTagName('tbody')[0];
+            var row = table.insertRow();
+            row.innerHTML = `
+                        <td><input type="number" name="IslemeReceteleri[0].OperasyonSırası" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="IslemeReceteleri[0].OperasyonKodu" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="IslemeReceteleri[0].OperasyonAdi" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="IslemeReceteleri[0].IsMerkezi" class="form-control form-control-sm" placeholder="Ergitme, Torna, vb." /></td>
+                        <td><input type="number" step="any" name="IslemeReceteleri[0].TakimTuketimi" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="IslemeReceteleri[0].StokKodu" class="form-control form-control-sm" /></td>
+                        <td><input type="text" name="IslemeReceteleri[0].StokAdi" class="form-control form-control-sm" /></td>
+                        <td><input type="number" step="any" name="IslemeReceteleri[0].BirimElektrikTuketimi" class="form-control form-control-sm" /></td>
+                        <td><button type="button" class="btn btn-danger btn-sm btn-satir-sil">Sil</button></td>
+                    `;
+        }
+    </script>
+}

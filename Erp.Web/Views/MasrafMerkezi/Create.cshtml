@@ -1,0 +1,58 @@
+﻿@model Erp.Data.Entities.MasrafMerkezi
+
+@{
+    ViewData["Title"] = "Yeni Masraf Merkezi Ekle";
+}
+
+<h1>Yeni Masraf Merkezi Ekle</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Kod" class="control-label"></label>
+                <input asp-for="Kod" class="form-control" />
+                <span asp-validation-for="Kod" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Ad" class="control-label"></label>
+                <input asp-for="Ad" class="form-control" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="UstMasrafMerkezi" class="control-label"></label>
+                <input asp-for="UstMasrafMerkezi" class="form-control" placeholder="Üst masraf merkezi kodu" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Durum" class="control-label"></label>
+                <select asp-for="Durum" class="form-control">
+                    <option value="Aktif">Aktif</option>
+                    <option value="Pasif">Pasif</option>
+                </select>
+                <span asp-validation-for="Durum" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Aciklama" class="control-label"></label>
+                <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Kaydet" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
