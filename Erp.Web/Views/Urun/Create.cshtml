@@ -308,10 +308,12 @@
 
         function addErgitmeRow() {
             var table = document.getElementById('ergitmeTable').getElementsByTagName('tbody')[0];
+            var rowCount = table.rows.length; // Mevcut satır sayısını al
             var row = table.insertRow();
+
             row.innerHTML = `
                 <td>
-                    <select class="form-control form-control-sm stok-tipi" data-row="ergitme" name="ErgitmeReceteleri[0].StokTipi">
+                    <select class="form-control form-control-sm stok-tipi" data-row="ergitme" name="ErgitmeReceteleri[${rowCount}].StokTipi">
                         <option value="">Seçiniz</option>
                         <option value="Hammadde">Hammadde</option>
                         <option value="Sarf">Sarf</option>
@@ -322,28 +324,28 @@
                     </select>
                 </td>
                 <td>
-                    <select class="form-control form-control-sm stok-adi" data-row="ergitme" name="ErgitmeReceteleri[0].StokAdi">
+                    <select class="form-control form-control-sm stok-adi" data-row="ergitme" name="ErgitmeReceteleri[${rowCount}].StokAdi">
                         <option value="">Önce Stok Tipi Seçin</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" class="form-control form-control-sm stok-kodu" name="ErgitmeReceteleri[0].StokKodu" readonly />
+                    <input type="text" class="form-control form-control-sm stok-kodu" name="ErgitmeReceteleri[${rowCount}].StokKodu" readonly />
                 </td>
                 <td>
-                    <input type="number" step="any" name="ErgitmeReceteleri[0].Miktar" class="form-control form-control-sm" />
+                    <input type="number" step="any" name="ErgitmeReceteleri[${rowCount}].Miktar" class="form-control form-control-sm" />
                 </td>
                 <td>
-                    <select name="ErgitmeReceteleri[0].Birim" class="form-control form-control-sm">
+                    <select name="ErgitmeReceteleri[${rowCount}].Birim" class="form-control form-control-sm">
                         <option value="KG">KG</option>
                         <option value="ADET">ADET</option>
                         <option value="LT">LT</option>
                     </select>
                 </td>
-                        <td>
-            <input type="number" step="any" name="ErgitmeReceteleri[0].BirimElektrikTuketimi" class="form-control form-control-sm" value="0" />
-            </td>
-            <td>
-            <input type="number" name="ErgitmeReceteleri[0].ErgitmeSuresi" class="form-control form-control-sm" value="0" />
+                <td>
+                    <input type="number" step="any" name="ErgitmeReceteleri[${rowCount}].BirimElektrikTuketimi" class="form-control form-control-sm" />
+                </td>
+                <td>
+                    <input type="number" name="ErgitmeReceteleri[${rowCount}].ErgitmeSuresi" class="form-control form-control-sm" />
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger btn-sm btn-satir-sil">Sil</button>
