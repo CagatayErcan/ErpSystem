@@ -1,41 +1,51 @@
-﻿@model Erp.Data.Entities.Cari
+﻿html
+@model Erp.Data.Entities.Cari
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Cari Düzenle";
 }
 
-<h1>Edit</h1>
-
-<h4>Cari</h4>
+<h1>Cari Düzenle</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CariKodu" class="control-label"></label>
-                <input asp-for="CariKodu" class="form-control" />
-                <span asp-validation-for="CariKodu" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CariUnvani" class="control-label"></label>
-                <input asp-for="CariUnvani" class="form-control" />
-                <span asp-validation-for="CariUnvani" class="text-danger"></span>
-            </div>
+    <div class="col-md-8">
+        <form asp-action="Edit" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="CariKodu" />
+
+        <div class="form-group mb-3">
+            <label asp-for="CariKodu" class="control-label"></label>
+            <input asp-for="CariKodu" class="form-control" readonly style="background-color: #e9ecef;" />
+            <span asp-validation-for="CariKodu" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="CariUnvani" class="control-label"></label>
+            <input asp-for="CariUnvani" class="form-control" />
+            <span asp-validation-for="CariUnvani" class="text-danger"></span>
+        </div>
             <div class="form-group">
                 <label asp-for="CariKisaAd" class="control-label"></label>
                 <input asp-for="CariKisaAd" class="form-control" />
                 <span asp-validation-for="CariKisaAd" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="CariTipi" class="control-label"></label>
-                <input asp-for="CariTipi" class="form-control" />
+                <select asp-for="CariTipi" class="form-control">
+                    <option value="">Seçiniz</option>
+                    <option value="Müşteri">Müşteri</option>
+                    <option value="Tedarikçi">Tedarikçi</option>
+                    <option value="Her İkisi">Her İkisi</option>
+                </select>
                 <span asp-validation-for="CariTipi" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Durumu" class="control-label"></label>
-                <input asp-for="Durumu" class="form-control" />
+                <select asp-for="Durumu" class="form-control">
+                    <option value="">Seçiniz</option>
+                    <option value="AKTİF">AKTİF</option>
+                    <option value="PASİF">PASİF</option>
+                </select>
                 <span asp-validation-for="Durumu" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -145,6 +155,10 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Güncelle" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
             </div>
         </form>
     </div>

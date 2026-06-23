@@ -12,11 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CariKodu" class="control-label"></label>
-                <input asp-for="CariKodu" class="form-control" />
-                <span asp-validation-for="CariKodu" class="text-danger"></span>
-            </div>
+            
             <div class="form-group">
                 <label asp-for="CariUnvani" class="control-label"></label>
                 <input asp-for="CariUnvani" class="form-control" />
@@ -27,14 +23,23 @@
                 <input asp-for="CariKisaAd" class="form-control" />
                 <span asp-validation-for="CariKisaAd" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="CariTipi" class="control-label"></label>
-                <input asp-for="CariTipi" class="form-control" />
+                <select asp-for="CariTipi" class="form-control">
+                    <option value="">Seçiniz</option>
+                    <option value="Müşteri">Müşteri</option>
+                    <option value="Tedarikçi">Tedarikçi</option>
+                    <option value="Her İkisi">Her İkisi</option>
+                </select>
                 <span asp-validation-for="CariTipi" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Durumu" class="control-label"></label>
-                <input asp-for="Durumu" class="form-control" />
+                <select asp-for="Durumu" class="form-control">
+                    <option value="">Seçiniz</option>
+                    <option value="AKTİF">AKTİF</option>
+                    <option value="PASİF">PASİF</option>
+                </select>
                 <span asp-validation-for="Durumu" class="text-danger"></span>
             </div>
             <div class="form-group">

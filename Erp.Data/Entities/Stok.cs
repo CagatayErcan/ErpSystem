@@ -8,13 +8,15 @@ namespace Erp.Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Stok kodu zorunludur")]
-        [MaxLength(20, ErrorMessage = "Stok kodu en fazla 20 karakter olabilir")]
+        [MaxLength(20)]
         public string StokKodu { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Stok adı zorunludur")]
         [MaxLength(100, ErrorMessage = "Stok adı en fazla 100 karakter olabilir")]
         public string StokAdi { get; set; } = string.Empty;
+
+        [Display(Name = "Besleyici")]
+        public bool BesleyiciMi { get; set; } = false;
 
         [MaxLength(50)]
         public string? AnaGrup { get; set; }
@@ -22,9 +24,8 @@ namespace Erp.Data.Entities
         [MaxLength(50)]
         public string? AltGrup { get; set; }
 
-        [Required]
-        [MaxLength(10)]
-        public string StokTipi { get; set; } = "Hammadde"; // Hammadde, Sarf, Hizmet, Demirbaş, Yarı Mamul, Mamul
+        [MaxLength(50)]
+        public string? StokTipi { get; set; }  // Artık StokTipleri tablosundaki Ad ile eşleşecek
 
         [Required]
         [MaxLength(10)]

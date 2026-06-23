@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Erp.Data.Entities.SatisSiparis>
+
+@{
+    ViewData["Title"] = "Satış Siparişleri";
+}
+
+<style>
+    .btn-sm {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .badge-planlama {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .badge-onay {
+        background-color: #17a2b8;
+        color: #fff;
+    }
+
+    .badge-genel {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .badge-iptal {
+        background-color: #dc3545;
+        color: #fff;
+    }
+</style>
+
+<h1><i class="fas fa-shopping-cart text-primary"></i> Satış Siparişleri</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Sipariş Ekle
+    </a>
+</p>
+
+<div style="overflow-x: auto; width: 100%;">
+    <table id="siparisTable" class="table table-bordered table-striped" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Sipariş No</th>
+                <th>Sipariş Tarihi</th>
+                <th>Müşteri</th>
+                <th>Müşteri Sipariş No</th>
+                <th>Termin Tarihi</th>
+                <th>Döviz</th>
+                <th>Toplam Tutar</th>
+                <th>Durum</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SiparisNo</td>
+                    <td>@item.SiparisTarihi.ToString("dd.MM.yyyy")</td>
+                    <td>@item.Cari?.CariUnvani</td>
+                    <td>@item.MusteriSiparisNo</td>
+                    <td>@(item.TerminTarihi?.ToString("dd.MM.yyyy") ?? "-")</td>
+                    <td>@item.DovizTuru</td>
+                    <td>@((item.Detaylar?.Sum(d => d.SatirToplami) ?? 0).ToString("N2"))</td>
+                    <td>
+                        @if (item.Durum == "Planlama Onayı Bekliyor")
+                        {
+                            <span class="badge badge-planlama">@item.Durum</span>
+                        }
+                        else if (item.Durum == "Planlama Onaylandı")
+                        {
+                            <span class="badge badge-onay">@item.Durum</span>
+                        }
+                        else if (item.Durum == "Genel Müdür Onaylandı")
+                        {
+                            <span class="badge badge-genel">@item.Durum</span>
+                        }
+                        else if (item.Durum == "İptal")
+                        {
+                            <span class="badge badge-iptal">@item.Durum</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@item.Durum</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detay">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#siparisTable').DataTable({
+                language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json' },
+                pageLength: 25,
+                order: [[0, 'desc']]
+            });
+        });
+    </script>
+}

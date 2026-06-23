@@ -64,17 +64,47 @@
                 }
 
                 <!-- Maça Reçeteleri -->
-                @foreach (var item in Model.MacaReceteleri)
-                {
-                    <tr>
-                        <td>@item.MacaKodu</td>
-                        <td>@item.MacaAdi</td>
-                        <td>@item.KumTuketimi</td>
-                        <td>KG</td>
-                        <td>@Model.FireOrani %</td>
-                        <td><span class="badge bg-warning">Maça</span></td>
-                    </tr>
-                }
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5>Maça Reçetesi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="overflow-x: auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Maça Adı</th>
+                                        <th>Maça Kodu</th>
+                                        <th>Kullanım Adedi</th>
+                                        <th>Maça Cinsi</th>
+                                        <th>Çevrim Süresi (dk)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.MacaReceteleri != null && Model.MacaReceteleri.Any())
+                                    {
+                                        foreach (var item in Model.MacaReceteleri)
+                                        {
+                                            <tr>
+                                                <td>@item.MacaAdi</td>
+                                                <td>@item.MacaKodu</td>
+                                                <td>@item.KullanimAdedi</td>
+                                                <td>@item.MacaCinsi</td>
+                                                <td>@item.MacaCevrimSuresi</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Henüz maça reçetesi tanımlanmamış.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- İşleme Reçeteleri -->
                 @foreach (var item in Model.IslemeReceteleri)

@@ -1,0 +1,90 @@
+﻿@model Erp.Data.Entities.SatisSiparis
+
+@{
+    ViewData["Title"] = "Satış Siparişi Detay";
+}
+
+<h1>Satış Siparişi Detay</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">Sipariş No</dt>
+            <dd class="col-sm-8">@Model.SiparisNo</dd>
+
+            <dt class="col-sm-4">Sipariş Tarihi</dt>
+            <dd class="col-sm-8">@Model.SiparisTarihi.ToString("dd.MM.yyyy")</dd>
+
+            <dt class="col-sm-4">Müşteri</dt>
+            <dd class="col-sm-8">@Model.Cari?.CariUnvani</dd>
+
+            <dt class="col-sm-4">Müşteri Sipariş No</dt>
+            <dd class="col-sm-8">@Model.MusteriSiparisNo</dd>
+
+            <dt class="col-sm-4">Termin Tarihi</dt>
+            <dd class="col-sm-8">@(Model.TerminTarihi?.ToString("dd.MM.yyyy") ?? "-")</dd>
+
+            <dt class="col-sm-4">Durum</dt>
+            <dd class="col-sm-8">@Model.Durum</dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">Satış Temsilcisi</dt>
+            <dd class="col-sm-8">@Model.SatisTemsilcisi</dd>
+
+            <dt class="col-sm-4">Döviz Türü</dt>
+            <dd class="col-sm-8">@Model.DovizTuru</dd>
+
+            <dt class="col-sm-4">Ödeme Şekli</dt>
+            <dd class="col-sm-8">@Model.OdemeSekli</dd>
+
+            <dt class="col-sm-4">Teslimat Şekli</dt>
+            <dd class="col-sm-8">@Model.TeslimatSekli</dd>
+
+            <dt class="col-sm-4">Teslimat Adresi</dt>
+            <dd class="col-sm-8">@Model.TeslimatAdresi</dd>
+        </dl>
+    </div>
+</div>
+
+<h4>Sipariş Kalemleri</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ürün</th>
+            <th>Miktar</th>
+            <th>Birim</th>
+            <th>Birim Fiyat</th>
+            <th>İskonto</th>
+            <th>KDV</th>
+            <th>Toplam</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Detaylar ?? new List<Erp.Data.Entities.SatisSiparisDetay>())
+        {
+            <tr>
+                <td>@item.Stok?.StokAdi</td>
+                <td>@item.Miktar</td>
+                <td>@item.Birim</td>
+                <td>@item.BirimFiyat.ToString("N2")</td>
+                <td>@item.IskontoOrani.ToString("N2")%</td>
+                <td>@item.KdvOrani.ToString("N2")%</td>
+                <td>@item.SatirToplami.ToString("N2")</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="6" class="text-end fw-bold">Genel Toplam:</td>
+            <td class="fw-bold">@((Model.Detaylar?.Sum(d => d.SatirToplami) ?? 0).ToString("N2"))</td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+    <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+</div>

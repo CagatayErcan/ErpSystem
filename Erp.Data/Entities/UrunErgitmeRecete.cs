@@ -30,13 +30,6 @@ namespace Erp.Data.Entities
         [MaxLength(10)]
         public string? Birim { get; set; }
 
-        [Display(Name = "Elektrik Tüketimi (kWh)")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal BirimElektrikTuketimi { get; set; } = 0;
-
-        [Display(Name = "Ergitme Süresi (dk)")]
-        public int? ErgitmeSuresi { get; set; }
-
         public virtual Urun? Urun { get; set; }
        
     }

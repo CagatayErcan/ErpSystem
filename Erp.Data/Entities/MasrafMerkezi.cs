@@ -8,20 +8,20 @@ namespace Erp.Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Masraf merkezi kodu zorunludur")]
-        [MaxLength(20, ErrorMessage = "Masraf merkezi kodu en fazla 20 karakter olabilir")]
-        public string Kod { get; set; } = string.Empty;
+        [MaxLength(20)]
+        public string? Kod { get; set; } // Otomatik: MM-0001
 
         [Required(ErrorMessage = "Masraf merkezi adı zorunludur")]
-        [MaxLength(100, ErrorMessage = "Masraf merkezi adı en fazla 100 karakter olabilir")]
+        [MaxLength(100)]
         public string Ad { get; set; } = string.Empty;
 
-        [MaxLength(20)]
-        public string? UstMasrafMerkezi { get; set; }
+        [Required(ErrorMessage = "Ana grup seçimi zorunludur")]
+        [MaxLength(50)]
+        public string? AnaGrup { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(10)]
-        public string Durum { get; set; } = "Aktif"; // Aktif / Pasif
+        public string Durum { get; set; } = "Aktif";
 
         [MaxLength(500)]
         public string? Aciklama { get; set; }

@@ -22,13 +22,101 @@ namespace Erp.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Erp.Data.Entities.Cari", b =>
+            modelBuilder.Entity("Erp.Data.Entities.AlasimHammaddeOranlari", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AlasimSinifi")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HammaddeAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HammaddeKodu")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Oran")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("StokTipi")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AlasimHammaddeOranlari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.AltGrup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AltGruplari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.AnaGrup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnaGruplari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.Cari", b =>
+                {
+                    b.Property<string>("CariKodu")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Adres")
                         .HasMaxLength(500)
@@ -39,11 +127,6 @@ namespace Erp.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("CariKisaAd")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("CariKodu")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -135,7 +218,7 @@ namespace Erp.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CariKodu");
 
                     b.ToTable("Cariler");
                 });
@@ -165,6 +248,262 @@ namespace Erp.Data.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Erp.Data.Entities.EnerjiStandartlari", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Birim")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IsMerkezi")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Tuketim")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EnerjiStandartlari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.GiderKategorisi", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GiderKategorileri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.IsMerkezi", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Kod")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IsMerkezleri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.KalipRecete", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Birim")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal>("Miktar")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("StokAdi")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("StokKodu")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("StokTipi")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("UrunId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UrunId");
+
+                    b.ToTable("KalipReceteleri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.KalipSarfOranlari", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Birim")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("KalipCinsi")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("Miktar")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SarfAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SarfKodu")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("StokTipi")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KalipSarfOranlari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.MacaRecete", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("KullanimAdedi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MacaAdi")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("MacaCevrimSuresi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MacaCinsi")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("MacaKodu")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("UrunId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UrunId");
+
+                    b.ToTable("MacaReceteleri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.MacaSarfOranlari", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Birim")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MacaCinsi")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("Miktar")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SarfAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SarfKodu")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("StokTipi")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MacaSarfOranlari");
+                });
+
             modelBuilder.Entity("Erp.Data.Entities.MasrafMerkezi", b =>
                 {
                     b.Property<int>("Id")
@@ -182,6 +521,11 @@ namespace Erp.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("AnaGrup")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Durum")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -191,20 +535,132 @@ namespace Erp.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Kod")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UstMasrafMerkezi")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.HasKey("Id");
 
                     b.ToTable("MasrafMerkezleri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.SatisSiparis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CariKodu")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("DovizTuru")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("Durum")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Kur")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("MusteriSiparisNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OdemeSekli")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SatisTemsilcisi")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SiparisNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("SiparisTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TerminTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TeslimatAdresi")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TeslimatSekli")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CariKodu");
+
+                    b.ToTable("SatisSiparisleri");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.SatisSiparisDetay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Birim")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal>("BirimFiyat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("IskontoOrani")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("KdvOrani")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("Miktar")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("SatirToplami")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SatisSiparisId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StokId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SatisSiparisId");
+
+                    b.HasIndex("StokId");
+
+                    b.ToTable("SatisSiparisDetaylari");
                 });
 
             modelBuilder.Entity("Erp.Data.Entities.Stok", b =>
@@ -235,6 +691,9 @@ namespace Erp.Data.Migrations
                     b.Property<string>("AnaGrup")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("BesleyiciMi")
+                        .HasColumnType("bit");
 
                     b.Property<string>("GiderKategorisi")
                         .HasMaxLength(50)
@@ -280,9 +739,8 @@ namespace Erp.Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("StokTipi")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("VarsayilanTedarikci")
                         .HasMaxLength(50)
@@ -291,6 +749,30 @@ namespace Erp.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Stoklar");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.StokTipi", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("GuncellemeTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StokTipleri");
                 });
 
             modelBuilder.Entity("Erp.Data.Entities.Urun", b =>
@@ -326,12 +808,19 @@ namespace Erp.Data.Migrations
                     b.Property<DateTime?>("GuncellemeTarihi")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("KalipAgirligi")
+                        .HasColumnType("decimal(18,3)");
+
                     b.Property<int?>("KalipCevrimSuresi")
                         .HasColumnType("int");
 
                     b.Property<string>("KalipCinsi")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MusteriKisaAd")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
@@ -447,12 +936,6 @@ namespace Erp.Data.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<decimal>("BirimElektrikTuketimi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("ErgitmeSuresi")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Miktar")
                         .HasColumnType("decimal(18,2)");
 
@@ -525,54 +1008,6 @@ namespace Erp.Data.Migrations
                     b.ToTable("UrunIslemeReceteleri");
                 });
 
-            modelBuilder.Entity("Erp.Data.Entities.UrunMacaRecete", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AminGazi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("BezirYagiTuketimi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Co2Tuketimi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("KumTuketimi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("MacaAdi")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("MacaCinsi")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("MacaKodu")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("MacaKullanimAdedi")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("RecineTuketimi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UrunId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UrunId");
-
-                    b.ToTable("UrunMacaReceteleri");
-                });
-
             modelBuilder.Entity("Erp.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -601,6 +1036,56 @@ namespace Erp.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.KalipRecete", b =>
+                {
+                    b.HasOne("Erp.Data.Entities.Urun", "Urun")
+                        .WithMany("KalipReceteleri")
+                        .HasForeignKey("UrunId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Urun");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.MacaRecete", b =>
+                {
+                    b.HasOne("Erp.Data.Entities.Urun", "Urun")
+                        .WithMany("MacaReceteleri")
+                        .HasForeignKey("UrunId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Urun");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.SatisSiparis", b =>
+                {
+                    b.HasOne("Erp.Data.Entities.Cari", "Cari")
+                        .WithMany()
+                        .HasForeignKey("CariKodu");
+
+                    b.Navigation("Cari");
+                });
+
+            modelBuilder.Entity("Erp.Data.Entities.SatisSiparisDetay", b =>
+                {
+                    b.HasOne("Erp.Data.Entities.SatisSiparis", "SatisSiparis")
+                        .WithMany("Detaylar")
+                        .HasForeignKey("SatisSiparisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Erp.Data.Entities.Stok", "Stok")
+                        .WithMany()
+                        .HasForeignKey("StokId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SatisSiparis");
+
+                    b.Navigation("Stok");
                 });
 
             modelBuilder.Entity("Erp.Data.Entities.UrunBom", b =>
@@ -647,15 +1132,9 @@ namespace Erp.Data.Migrations
                     b.Navigation("Urun");
                 });
 
-            modelBuilder.Entity("Erp.Data.Entities.UrunMacaRecete", b =>
+            modelBuilder.Entity("Erp.Data.Entities.SatisSiparis", b =>
                 {
-                    b.HasOne("Erp.Data.Entities.Urun", "Urun")
-                        .WithMany("MacaReceteleri")
-                        .HasForeignKey("UrunId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Urun");
+                    b.Navigation("Detaylar");
                 });
 
             modelBuilder.Entity("Erp.Data.Entities.Urun", b =>
@@ -663,6 +1142,8 @@ namespace Erp.Data.Migrations
                     b.Navigation("ErgitmeReceteleri");
 
                     b.Navigation("IslemeReceteleri");
+
+                    b.Navigation("KalipReceteleri");
 
                     b.Navigation("MacaReceteleri");
 

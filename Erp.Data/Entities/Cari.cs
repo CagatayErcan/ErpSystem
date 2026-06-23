@@ -6,17 +6,14 @@ namespace Erp.Data.Entities
     public class Cari
     {
         [Key]
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "Cari kodu zorunludur")]
-        [MaxLength(20, ErrorMessage = "Cari kodu en fazla 20 karakter olabilir")]
+        [MaxLength(20)]
         public string CariKodu { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Cari ünvanı zorunludur")]
         [MaxLength(200, ErrorMessage = "Cari ünvanı en fazla 200 karakter olabilir")]
         public string CariUnvani { get; set; } = string.Empty;
 
-        [MaxLength(50)]
+        [MaxLength(20)]
         public string? CariKisaAd { get; set; }
 
         [Required]

@@ -1,64 +1,89 @@
 ﻿@model Erp.Data.Entities.MasrafMerkezi
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Masraf Merkezi Düzenle";
 }
 
-<h1>Edit</h1>
-
-<h4>MasrafMerkezi</h4>
+<h1>Masraf Merkezi Düzenle</h1>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <input type="hidden" asp-for="Kod" />
+            <input type="hidden" asp-for="OlusturmaTarihi" />
+
+            <!-- Kod - Readonly -->
+            <div class="form-group mb-3">
                 <label asp-for="Kod" class="control-label"></label>
-                <input asp-for="Kod" class="form-control" />
-                <span asp-validation-for="Kod" class="text-danger"></span>
+                <input asp-for="Kod" class="form-control" readonly style="background-color: #e9ecef;" />
             </div>
-            <div class="form-group">
+
+            <!-- Ad - Otomatik tamamlama yok -->
+            <div class="form-group mb-3">
                 <label asp-for="Ad" class="control-label"></label>
-                <input asp-for="Ad" class="form-control" />
+                <input asp-for="Ad" class="form-control" autocomplete="off" />
                 <span asp-validation-for="Ad" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UstMasrafMerkezi" class="control-label"></label>
-                <input asp-for="UstMasrafMerkezi" class="form-control" />
-                <span asp-validation-for="UstMasrafMerkezi" class="text-danger"></span>
+
+            <!-- Ana Grup - Dropdown -->
+            <div class="form-group mb-3">
+                <label asp-for="AnaGrup" class="control-label"></label>
+                <select asp-for="AnaGrup" class="form-control">
+                    <option value="">Seçiniz</option>
+                    @if (ViewBag.AnaGruplari != null)
+                    {
+                        foreach (var item in ViewBag.AnaGruplari)
+                        {
+                            if (Model.AnaGrup == item)
+                            {
+                                <option value="@item" selected>@item</option>
+                            }
+                            else
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                    }
+                </select>
             </div>
-            <div class="form-group">
+
+            <!-- Durum - Düzeltilmiş -->
+            <div class="form-group mb-3">
                 <label asp-for="Durum" class="control-label"></label>
-                <input asp-for="Durum" class="form-control" />
+                <select asp-for="Durum" class="form-control">
+                    @if (Model.Durum == "Aktif")
+                    {
+                        <option value="Aktif" selected>Aktif</option>
+                        <option value="Pasif">Pasif</option>
+                    }
+                    else
+                    {
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pasif" selected>Pasif</option>
+                    }
+                </select>
                 <span asp-validation-for="Durum" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <!-- Açıklama -->
+            <div class="form-group mb-3">
                 <label asp-for="Aciklama" class="control-label"></label>
-                <input asp-for="Aciklama" class="form-control" />
-                <span asp-validation-for="Aciklama" class="text-danger"></span>
+                <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
             </div>
-            <div class="form-group">
-                <label asp-for="OlusturmaTarihi" class="control-label"></label>
-                <input asp-for="OlusturmaTarihi" class="form-control" />
-                <span asp-validation-for="OlusturmaTarihi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GuncellemeTarihi" class="control-label"></label>
-                <input asp-for="GuncellemeTarihi" class="form-control" />
-                <span asp-validation-for="GuncellemeTarihi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Güncelle" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -34,11 +34,68 @@ namespace Erp.Web.Controllers
 
             var urun = await _context.Urunler
                 .Include(u => u.ErgitmeReceteleri)
+                .Include(u => u.KalipReceteleri)
                 .Include(u => u.MacaReceteleri)
                 .Include(u => u.IslemeReceteleri)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (urun == null) return NotFound();
+
+            // ========== YENİ: Çift Kayıt Temizleme ==========
+            // Ergitme Reçeteleri
+            if (urun.ErgitmeReceteleri != null && urun.ErgitmeReceteleri.Any())
+            {
+                var tekrarEdenler = urun.ErgitmeReceteleri
+                    .GroupBy(r => r.StokKodu)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(g => g.OrderByDescending(r => r.Id).Skip(1))
+                    .ToList();
+
+                foreach (var item in tekrarEdenler)
+                {
+                    _context.UrunErgitmeReceteleri.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Maça Reçeteleri (YENİ Model - MacaRecete)
+            if (urun.MacaReceteleri != null && urun.MacaReceteleri.Any())
+            {
+                var tekrarEdenler = urun.MacaReceteleri
+                    .GroupBy(r => r.MacaKodu)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(g => g.OrderByDescending(r => r.Id).Skip(1))
+                    .ToList();
+
+                foreach (var item in tekrarEdenler)
+                {
+                    _context.MacaReceteleri.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // İşleme Reçeteleri
+            if (urun.IslemeReceteleri != null && urun.IslemeReceteleri.Any())
+            {
+                var tekrarEdenler = urun.IslemeReceteleri
+                    .GroupBy(r => r.StokKodu)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(g => g.OrderByDescending(r => r.Id).Skip(1))
+                    .ToList();
+
+                foreach (var item in tekrarEdenler)
+                {
+                    _context.UrunIslemeReceteleri.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+            // Besleyici detayını getir
+            if (!string.IsNullOrEmpty(urun.BesleyiciStokKodu))
+            {
+                ViewBag.BesleyiciDetay = await _context.Stoklar
+                    .FirstOrDefaultAsync(s => s.StokKodu == urun.BesleyiciStokKodu);
+            }
+            // ========== KONTROL SONU ==========
 
             // BOM revizyon bilgisini getir
             var bom = await _context.UrunBomlar
@@ -58,11 +115,36 @@ namespace Erp.Web.Controllers
         // GET: Urun/Create
         public IActionResult Create()
         {
-            // Tüm stokları ViewBag'e gönder
+            // Create metodunun başına ekleyin
+            var liste = _context.Cariler
+                .Where(c => c.Durumu == "Aktif" && (c.CariTipi == "Müşteri" || c.CariTipi == "Her İkisi"))
+                .Select(c => new { c.CariKisaAd, c.CariUnvani })
+                .ToList();
+
+            foreach (var item in liste)
+            {
+                System.Diagnostics.Debug.WriteLine($"KisaAd: {item.CariKisaAd}, Unvan: {item.CariUnvani}");
+            }
+            // Stok listesi
             ViewBag.Stoklar = _context.Stoklar
                 .OrderBy(s => s.StokAdi)
                 .Select(s => new { s.Id, s.StokKodu, s.StokAdi, s.StokTipi })
                 .ToList();
+            // Besleyici listesi (Sarf tipi ve BesleyiciMi true olanlar)
+            ViewBag.BesleyiciListesi = _context.Stoklar
+                .Where(s => s.BesleyiciMi == true && s.StokTipi == "Sarf")
+                .OrderBy(s => s.StokAdi)
+                .Select(s => new { s.StokKodu, s.StokAdi, s.Aciklama })
+                .ToList();
+
+            // ========== MÜŞTERİ LİSTESİ (YENİ) ==========
+            ViewBag.MusteriListesi = _context.Cariler
+            .Where(c => c.Durumu == "Aktif" && (c.CariTipi == "Müşteri" || c.CariTipi == "Her İkisi"))
+            .OrderBy(c => c.CariKisaAd)
+            .Select(c => new { c.CariKisaAd })
+            .ToList();
+            // ===========================================
+
             return View();
         }
 
@@ -125,8 +207,6 @@ namespace Erp.Web.Controllers
                                 StokKodu = ergitmeStokKodu[i],
                                 Miktar = i < ergitmeMiktar.Length ? ergitmeMiktar[i] : 0,
                                 Birim = i < ergitmeBirim.Length ? ergitmeBirim[i] : "KG",
-                                BirimElektrikTuketimi = i < ergitmeElektrik.Length ? ergitmeElektrik[i] : 0,
-                                ErgitmeSuresi = i < ergitmeSure.Length ? ergitmeSure[i] : 0
                             };
                             _context.UrunErgitmeReceteleri.Add(recete);
                         }
@@ -138,43 +218,26 @@ namespace Erp.Web.Controllers
                 // ==========================================
                 var macaAdi = Request.Form["MacaReceteleri[0].MacaAdi"].ToArray();
                 var macaKodu = Request.Form["MacaReceteleri[0].MacaKodu"].ToArray();
-                var macaKullanim = Request.Form["MacaReceteleri[0].MacaKullanimAdedi"]
+                var macaKullanim = Request.Form["MacaReceteleri[0].KullanimAdedi"]
                     .Select(x => int.TryParse(x, out int i) ? i : 0).ToArray();
                 var macaCinsi = Request.Form["MacaReceteleri[0].MacaCinsi"].ToArray();
-                var macaKum = Request.Form["MacaReceteleri[0].KumTuketimi"]
-                    .Select(x => decimal.TryParse(x, out decimal d) ? d : 0).ToArray();
-                var macaRecine = Request.Form["MacaReceteleri[0].RecineTuketimi"]
-                    .Select(x => decimal.TryParse(x, out decimal d) ? d : 0).ToArray();
-                var macaCo2 = Request.Form["MacaReceteleri[0].Co2Tuketimi"]
-                    .Select(x => decimal.TryParse(x, out decimal d) ? d : 0).ToArray();
-                var macaAmin = Request.Form["MacaReceteleri[0].AminGazi"]
-                    .Select(x => decimal.TryParse(x, out decimal d) ? d : 0).ToArray();
-                var macaBezir = Request.Form["MacaReceteleri[0].BezirYagiTuketimi"]
-                    .Select(x => decimal.TryParse(x, out decimal d) ? d : 0).ToArray();
+                var macaCevrimSuresi = Request.Form["MacaReceteleri[0].MacaCevrimSuresi"]
+                    .Select(x => int.TryParse(x, out int i) ? i : 0).ToArray();
 
-                System.Diagnostics.Debug.WriteLine($"Maça satır sayısı: {macaAdi.Length}");
-
-                if (macaAdi.Length > 0 && !string.IsNullOrEmpty(macaAdi[0]))
+                for (int i = 0; i < macaAdi.Length; i++)
                 {
-                    for (int i = 0; i < macaAdi.Length; i++)
+                    if (!string.IsNullOrEmpty(macaAdi[i]))
                     {
-                        if (!string.IsNullOrEmpty(macaAdi[i]))
+                        var recete = new MacaRecete
                         {
-                            var recete = new UrunMacaRecete
-                            {
-                                UrunId = urun.Id,
-                                MacaAdi = macaAdi[i],
-                                MacaKodu = i < macaKodu.Length ? macaKodu[i] : "",
-                                MacaKullanimAdedi = i < macaKullanim.Length ? macaKullanim[i] : 0,
-                                MacaCinsi = i < macaCinsi.Length ? macaCinsi[i] : "",
-                                KumTuketimi = i < macaKum.Length ? macaKum[i] : 0,
-                                RecineTuketimi = i < macaRecine.Length ? macaRecine[i] : 0,
-                                Co2Tuketimi = i < macaCo2.Length ? macaCo2[i] : 0,
-                                AminGazi = i < macaAmin.Length ? macaAmin[i] : 0,
-                                BezirYagiTuketimi = i < macaBezir.Length ? macaBezir[i] : 0
-                            };
-                            _context.UrunMacaReceteleri.Add(recete);
-                        }
+                            UrunId = urun.Id,
+                            MacaAdi = macaAdi[i],
+                            MacaKodu = i < macaKodu.Length ? macaKodu[i] : "",
+                            KullanimAdedi = i < macaKullanim.Length ? macaKullanim[i] : 0,
+                            MacaCinsi = i < macaCinsi.Length ? macaCinsi[i] : "",
+                            MacaCevrimSuresi = i < macaCevrimSuresi.Length ? macaCevrimSuresi[i] : 0
+                        };
+                        _context.MacaReceteleri.Add(recete);
                     }
                 }
 
@@ -255,17 +318,35 @@ namespace Erp.Web.Controllers
         {
             if (id == null) return NotFound();
 
+            // ========== INCLUDE İLE REÇETELERİ GETİR ==========
             var urun = await _context.Urunler
-                .Include(u => u.ErgitmeReceteleri)
-                .Include(u => u.MacaReceteleri)
-                .Include(u => u.IslemeReceteleri)
+                .Include(u => u.ErgitmeReceteleri)   // ← ERGİTME REÇETELERİ
+                .Include(u => u.KalipReceteleri)     // ← KALIP REÇETELERİ
+                .Include(u => u.MacaReceteleri)      // ← MAÇA REÇETELERİ
+                .Include(u => u.IslemeReceteleri)    // ← İŞLEME REÇETELERİ
                 .FirstOrDefaultAsync(m => m.Id == id);
+            // ================================================
 
             if (urun == null) return NotFound();
 
+            // Stok listesi
             ViewBag.Stoklar = _context.Stoklar
                 .OrderBy(s => s.StokAdi)
                 .Select(s => new { s.Id, s.StokKodu, s.StokAdi, s.StokTipi })
+                .ToList();
+
+            // Besleyici listesi (Sarf tipi ve BesleyiciMi true olanlar)
+            ViewBag.BesleyiciListesi = _context.Stoklar
+                .Where(s => s.BesleyiciMi == true && s.StokTipi == "Sarf")
+                .OrderBy(s => s.StokAdi)
+                .Select(s => new { s.StokKodu, s.StokAdi, s.Aciklama })
+                .ToList();
+
+            // Müşteri listesi
+            ViewBag.MusteriListesi = _context.Cariler
+                .Where(c => c.Durumu == "Aktif" && (c.CariTipi == "Müşteri" || c.CariTipi == "Her İkisi"))
+                .OrderBy(c => c.CariUnvani)
+                .Select(c => new { c.CariKisaAd, c.CariUnvani })
                 .ToList();
 
             return View(urun);
@@ -284,180 +365,135 @@ namespace Erp.Web.Controllers
             {
                 try
                 {
-                    // 1. Ana ürün bilgilerini güncelle
+                    // 1. Ana ürünü güncelle
                     urun.GuncellemeTarihi = DateTime.Now;
                     _context.Update(urun);
 
-                    // 2. Eski reçeteleri TAMAMEN SİL
+                    // 2. Eski reçeteleri TEMİZLE (RemoveRange ile)
                     var eskiErgitme = _context.UrunErgitmeReceteleri.Where(r => r.UrunId == id);
                     _context.UrunErgitmeReceteleri.RemoveRange(eskiErgitme);
 
-                    var eskiMaca = _context.UrunMacaReceteleri.Where(r => r.UrunId == id);
-                    _context.UrunMacaReceteleri.RemoveRange(eskiMaca);
+                    var eskiMaca = _context.MacaReceteleri.Where(r => r.UrunId == id);
+                    _context.MacaReceteleri.RemoveRange(eskiMaca);
 
                     var eskiIsleme = _context.UrunIslemeReceteleri.Where(r => r.UrunId == id);
                     _context.UrunIslemeReceteleri.RemoveRange(eskiIsleme);
 
                     // 3. Tüm form anahtarlarını tara ve Ergitme reçetelerini topla
-                    var ergitmeKeys = Request.Form.Keys
-                        .Where(k => k.StartsWith("ErgitmeReceteleri[") && k.Contains("]."))
-                        .Select(k => k.Split('[')[1].Split(']')[0])
-                        .Distinct()
-                        .OrderBy(k => int.Parse(k))
-                        .ToList();
+                    var allKeys = Request.Form.Keys;
+                    var ergitmeIndices = new HashSet<int>();
 
-                    var ergitmeStokKodu = new List<string>();
-                    var ergitmeStokTipi = new List<string>();
-                    var ergitmeStokAdi = new List<string>();
-                    var ergitmeMiktar = new List<decimal>();
-                    var ergitmeBirim = new List<string>();
-                    var ergitmeElektrik = new List<decimal>();
-                    var ergitmeSure = new List<int>();
+                    // ========== KALIP REÇETELERİNİ SİL ==========
+                    var eskiKalip = _context.KalipReceteleri.Where(r => r.UrunId == id);
+                    _context.KalipReceteleri.RemoveRange(eskiKalip);
+                    // ===========================================
 
-                    foreach (var index in ergitmeKeys)
+                    foreach (var key in allKeys)
                     {
-                        var prefix = $"ErgitmeReceteleri[{index}]";
-                        ergitmeStokKodu.Add(Request.Form[$"{prefix}.StokKodu"].ToString());
-                        ergitmeStokTipi.Add(Request.Form[$"{prefix}.StokTipi"].ToString());
-                        ergitmeStokAdi.Add(Request.Form[$"{prefix}.StokAdi"].ToString());
-
-                        if (decimal.TryParse(Request.Form[$"{prefix}.Miktar"], out decimal miktar))
-                            ergitmeMiktar.Add(miktar);
-                        else
-                            ergitmeMiktar.Add(0);
-
-                        ergitmeBirim.Add(Request.Form[$"{prefix}.Birim"].ToString());
-
-                        if (decimal.TryParse(Request.Form[$"{prefix}.BirimElektrikTuketimi"], out decimal elektrik))
-                            ergitmeElektrik.Add(elektrik);
-                        else
-                            ergitmeElektrik.Add(0);
-
-                        if (int.TryParse(Request.Form[$"{prefix}.ErgitmeSuresi"], out int sure))
-                            ergitmeSure.Add(sure);
-                        else
-                            ergitmeSure.Add(0);
+                        if (key.StartsWith("ErgitmeReceteleri[") && key.Contains("]."))
+                        {
+                            var indexStr = key.Split('[')[1].Split(']')[0];
+                            if (int.TryParse(indexStr, out int idx))
+                            {
+                                ergitmeIndices.Add(idx);
+                            }
+                        }
                     }
 
-                    System.Diagnostics.Debug.WriteLine($"Ergitme satır sayısı: {ergitmeStokKodu.Count}");
-
-                    for (int i = 0; i < ergitmeStokKodu.Count; i++)
+                    // 4. Her indeks için verileri oku ve EKLE
+                    foreach (var index in ergitmeIndices.OrderBy(i => i))
                     {
-                        if (!string.IsNullOrEmpty(ergitmeStokKodu[i]))
+                        var prefix = $"ErgitmeReceteleri[{index}]";
+                        var stokKodu = Request.Form[$"{prefix}.StokKodu"].ToString();
+
+                        if (!string.IsNullOrEmpty(stokKodu))
                         {
                             var recete = new UrunErgitmeRecete
                             {
                                 UrunId = urun.Id,
-                                StokTipi = i < ergitmeStokTipi.Count ? ergitmeStokTipi[i] : "",
-                                StokAdi = i < ergitmeStokAdi.Count ? ergitmeStokAdi[i] : "",
-                                StokKodu = ergitmeStokKodu[i],
-                                Miktar = i < ergitmeMiktar.Count ? ergitmeMiktar[i] : 0,
-                                Birim = i < ergitmeBirim.Count ? ergitmeBirim[i] : "KG",
-                                BirimElektrikTuketimi = i < ergitmeElektrik.Count ? ergitmeElektrik[i] : 0,
-                                ErgitmeSuresi = i < ergitmeSure.Count ? ergitmeSure[i] : 0
+                                StokTipi = Request.Form[$"{prefix}.StokTipi"].ToString(),
+                                StokAdi = Request.Form[$"{prefix}.StokAdi"].ToString(),
+                                StokKodu = stokKodu,
+                                Miktar = decimal.TryParse(Request.Form[$"{prefix}.Miktar"], out decimal m) ? m : 0,
+                                Birim = Request.Form[$"{prefix}.Birim"].ToString(),
                             };
                             _context.UrunErgitmeReceteleri.Add(recete);
                         }
                     }
 
-                    // 4. Maça Reçeteleri
-                    var macaKeys = Request.Form.Keys
-                        .Where(k => k.StartsWith("MacaReceteleri[") && k.EndsWith("].MacaAdi"))
-                        .OrderBy(k => k)
-                        .ToList();
+                    // Maça Reçeteleri - Edit (YENİ Model)
+                    var macaAdi = Request.Form["MacaReceteleri[0].MacaAdi"].ToArray();
+                    var macaKodu = Request.Form["MacaReceteleri[0].MacaKodu"].ToArray();
+                    var macaKullanim = Request.Form["MacaReceteleri[0].KullanimAdedi"]
+                        .Select(x => int.TryParse(x, out int i) ? i : 0).ToArray();
+                    var macaCinsi = Request.Form["MacaReceteleri[0].MacaCinsi"].ToArray();
+                    var macaCevrimSuresi = Request.Form["MacaReceteleri[0].MacaCevrimSuresi"]
+                        .Select(x => int.TryParse(x, out int i) ? i : 0).ToArray();
 
-                    if (macaKeys.Any())
+                    for (int i = 0; i < macaAdi.Length; i++)
                     {
-                        var macaAdi = macaKeys.Select(k => Request.Form[k].ToString()).ToList();
-                        var macaKodu = macaKeys.Select(k => Request.Form[k.Replace("MacaAdi", "MacaKodu")].ToString()).ToList();
-                        var macaKullanim = macaKeys.Select(k => int.TryParse(Request.Form[k.Replace("MacaAdi", "MacaKullanimAdedi")], out int i) ? i : 0).ToList();
-                        var macaCinsi = macaKeys.Select(k => Request.Form[k.Replace("MacaAdi", "MacaCinsi")].ToString()).ToList();
-                        var macaKum = macaKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("MacaAdi", "KumTuketimi")], out decimal d) ? d : 0).ToList();
-                        var macaRecine = macaKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("MacaAdi", "RecineTuketimi")], out decimal d) ? d : 0).ToList();
-                        var macaCo2 = macaKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("MacaAdi", "Co2Tuketimi")], out decimal d) ? d : 0).ToList();
-                        var macaAmin = macaKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("MacaAdi", "AminGazi")], out decimal d) ? d : 0).ToList();
-                        var macaBezir = macaKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("MacaAdi", "BezirYagiTuketimi")], out decimal d) ? d : 0).ToList();
-
-                        for (int i = 0; i < macaAdi.Count; i++)
+                        if (!string.IsNullOrEmpty(macaAdi[i]))
                         {
-                            if (!string.IsNullOrEmpty(macaAdi[i]))
+                            var recete = new MacaRecete
                             {
-                                var recete = new UrunMacaRecete
-                                {
-                                    UrunId = urun.Id,
-                                    MacaAdi = macaAdi[i],
-                                    MacaKodu = i < macaKodu.Count ? macaKodu[i] : "",
-                                    MacaKullanimAdedi = i < macaKullanim.Count ? macaKullanim[i] : 0,
-                                    MacaCinsi = i < macaCinsi.Count ? macaCinsi[i] : "",
-                                    KumTuketimi = i < macaKum.Count ? macaKum[i] : 0,
-                                    RecineTuketimi = i < macaRecine.Count ? macaRecine[i] : 0,
-                                    Co2Tuketimi = i < macaCo2.Count ? macaCo2[i] : 0,
-                                    AminGazi = i < macaAmin.Count ? macaAmin[i] : 0,
-                                    BezirYagiTuketimi = i < macaBezir.Count ? macaBezir[i] : 0
-                                };
-                                _context.UrunMacaReceteleri.Add(recete);
+                                UrunId = urun.Id,
+                                MacaAdi = macaAdi[i],
+                                MacaKodu = i < macaKodu.Length ? macaKodu[i] : "",
+                                KullanimAdedi = i < macaKullanim.Length ? macaKullanim[i] : 0,
+                                MacaCinsi = i < macaCinsi.Length ? macaCinsi[i] : "",
+                                MacaCevrimSuresi = i < macaCevrimSuresi.Length ? macaCevrimSuresi[i] : 0
+                            };
+                            _context.MacaReceteleri.Add(recete);
+                        }
+                    }
+
+                    // 6. İşleme Reçeteleri (aynı mantık)
+                    var islemeIndices = new HashSet<int>();
+                    foreach (var key in allKeys)
+                    {
+                        if (key.StartsWith("IslemeReceteleri[") && key.Contains("]."))
+                        {
+                            var indexStr = key.Split('[')[1].Split(']')[0];
+                            if (int.TryParse(indexStr, out int idx))
+                            {
+                                islemeIndices.Add(idx);
                             }
                         }
                     }
 
-                    // 5. İşleme Reçeteleri
-                    var islemeKeys = Request.Form.Keys
-                        .Where(k => k.StartsWith("IslemeReceteleri[") && k.EndsWith("].OperasyonSırası"))
-                        .OrderBy(k => k)
-                        .ToList();
-
-                    if (islemeKeys.Any())
+                    foreach (var index in islemeIndices.OrderBy(i => i))
                     {
-                        var islemeSira = islemeKeys.Select(k => int.TryParse(Request.Form[k], out int i) ? i : 0).ToList();
-                        var islemeKodu = islemeKeys.Select(k => Request.Form[k.Replace("OperasyonSırası", "OperasyonKodu")].ToString()).ToList();
-                        var islemeAdi = islemeKeys.Select(k => Request.Form[k.Replace("OperasyonSırası", "OperasyonAdi")].ToString()).ToList();
-                        var islemeMerkez = islemeKeys.Select(k => Request.Form[k.Replace("OperasyonSırası", "IsMerkezi")].ToString()).ToList();
-                        var islemeTakim = islemeKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("OperasyonSırası", "TakimTuketimi")], out decimal d) ? d : 0).ToList();
-                        var islemeStokKodu = islemeKeys.Select(k => Request.Form[k.Replace("OperasyonSırası", "StokKodu")].ToString()).ToList();
-                        var islemeStokAdi = islemeKeys.Select(k => Request.Form[k.Replace("OperasyonSırası", "StokAdi")].ToString()).ToList();
-                        var islemeElektrik = islemeKeys.Select(k => decimal.TryParse(Request.Form[k.Replace("OperasyonSırası", "BirimElektrikTuketimi")], out decimal d) ? d : 0).ToList();
+                        var prefix = $"IslemeReceteleri[{index}]";
+                        var opSira = Request.Form[$"{prefix}.OperasyonSırası"].ToString();
 
-                        for (int i = 0; i < islemeSira.Count; i++)
+                        if (!string.IsNullOrEmpty(opSira) && int.TryParse(opSira, out int sira) && sira > 0)
                         {
-                            if (islemeSira[i] > 0 || !string.IsNullOrEmpty(islemeKodu[i]))
+                            var recete = new UrunIslemeRecete
                             {
-                                var recete = new UrunIslemeRecete
-                                {
-                                    UrunId = urun.Id,
-                                    OperasyonSırası = islemeSira[i],
-                                    OperasyonKodu = i < islemeKodu.Count ? islemeKodu[i] : "",
-                                    OperasyonAdi = i < islemeAdi.Count ? islemeAdi[i] : "",
-                                    IsMerkezi = i < islemeMerkez.Count ? islemeMerkez[i] : "",
-                                    TakimTuketimi = i < islemeTakim.Count ? islemeTakim[i] : 0,
-                                    StokKodu = i < islemeStokKodu.Count ? islemeStokKodu[i] : "",
-                                    StokAdi = i < islemeStokAdi.Count ? islemeStokAdi[i] : "",
-                                    BirimElektrikTuketimi = i < islemeElektrik.Count ? islemeElektrik[i] : 0
-                                };
-                                _context.UrunIslemeReceteleri.Add(recete);
-                            }
+                                UrunId = urun.Id,
+                                OperasyonSırası = sira,
+                                OperasyonKodu = Request.Form[$"{prefix}.OperasyonKodu"].ToString(),
+                                OperasyonAdi = Request.Form[$"{prefix}.OperasyonAdi"].ToString(),
+                                IsMerkezi = Request.Form[$"{prefix}.IsMerkezi"].ToString(),
+                                TakimTuketimi = decimal.TryParse(Request.Form[$"{prefix}.TakimTuketimi"], out decimal t) ? t : 0,
+                                StokKodu = Request.Form[$"{prefix}.StokKodu"].ToString(),
+                                StokAdi = Request.Form[$"{prefix}.StokAdi"].ToString(),
+                                BirimElektrikTuketimi = decimal.TryParse(Request.Form[$"{prefix}.BirimElektrikTuketimi"], out decimal e) ? e : 0
+                            };
+                            _context.UrunIslemeReceteleri.Add(recete);
                         }
                     }
 
-                    // 6. Değişiklikleri kaydet
+                    // 7. TÜM değişiklikleri KAYDET
                     await _context.SaveChangesAsync();
-                    System.Diagnostics.Debug.WriteLine("Tüm değişiklikler kaydedildi.");
 
-                    // 7. BOM revizyonu oluştur
+                    // 8. BOM revizyonu oluştur
                     var sonBom = await _context.UrunBomlar
                         .Where(b => b.UrunId == urun.Id)
                         .OrderByDescending(b => b.RevizyonTarihi)
                         .FirstOrDefaultAsync();
 
-                    string yeniRevizyonNo;
-                    if (sonBom == null)
-                    {
-                        yeniRevizyonNo = "REV-001";
-                    }
-                    else
-                    {
-                        var sonNumara = int.Parse(sonBom.RevizyonNo.Split('-')[1]);
-                        yeniRevizyonNo = $"REV-{sonNumara + 1:D3}";
-                    }
+                    string yeniRevizyonNo = sonBom == null ? "REV-001" : $"REV-{int.Parse(sonBom.RevizyonNo.Split('-')[1]) + 1:D3}";
 
                     var yeniBom = new UrunBom
                     {
@@ -472,6 +508,11 @@ namespace Erp.Web.Controllers
 
                     return RedirectToAction(nameof(Details), new { id = urun.Id });
                 }
+                catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE") == true)
+                {
+                    ModelState.AddModelError("", "Aynı stok kodu birden fazla satırda kullanılamaz. Lütfen tekrar eden kayıtları kontrol edin.");
+                    return View(urun);
+                }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UrunExists(urun.Id)) return NotFound();
@@ -479,7 +520,9 @@ namespace Erp.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu: " + ex.Message);
+                    // Inner exception'ı göster
+                    var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                    ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu: " + innerMessage);
                     return View(urun);
                 }
             }
@@ -519,6 +562,84 @@ namespace Erp.Web.Controllers
                 .ToListAsync();
 
             return Json(stoklar);
+        }
+        // GET: Urun/GetAlasimOranlari
+        [HttpGet]
+        public async Task<IActionResult> GetAlasimOranlari(string alasimSinifi)
+        {
+            if (string.IsNullOrEmpty(alasimSinifi))
+                return Json(new List<object>());
+
+            var oranlar = await _context.AlasimHammaddeOranlari
+                .Where(x => x.AlasimSinifi == alasimSinifi)
+                .Select(x => new { x.StokTipi, x.HammaddeKodu, x.HammaddeAdi, x.Oran })
+                .ToListAsync();
+
+            return Json(oranlar);
+        }
+        // GET: Urun/GetKalipOranlari
+        [HttpGet]
+        public async Task<IActionResult> GetKalipOranlari(string kalipCinsi)
+        {
+            if (string.IsNullOrEmpty(kalipCinsi))
+                return Json(new List<object>());
+
+            var oranlar = await _context.KalipSarfOranlari
+                .Where(x => x.KalipCinsi == kalipCinsi)
+                .Select(x => new { x.StokTipi, x.SarfKodu, x.SarfAdi, x.Miktar })
+                .ToListAsync();
+
+            return Json(oranlar);
+        }
+
+        // GET: Urun/GetKalipReceteData
+        [HttpGet]
+        public async Task<IActionResult> GetKalipReceteData(string kalipCinsi, string besleyiciStokKodu, int? besleyiciAdeti, int? parcaAdeti)
+        {
+            var result = new List<object>();
+
+            // 1. Kalıp Sarf Oranları
+            if (!string.IsNullOrEmpty(kalipCinsi))
+            {
+                var kalipOranlari = await _context.KalipSarfOranlari
+                    .Where(x => x.KalipCinsi == kalipCinsi)
+                    .Select(x => new
+                    {
+                        StokTipi = x.StokTipi,
+                        StokAdi = x.SarfAdi,
+                        StokKodu = x.SarfKodu,
+                        Miktar = x.Miktar, // % olarak
+                        Birim = x.Birim,
+                        Kaynak = "Kalip"
+                    })
+                    .ToListAsync();
+
+                result.AddRange(kalipOranlari);
+            }
+
+            // 2. Besleyici Bilgisi
+            if (!string.IsNullOrEmpty(besleyiciStokKodu) && besleyiciAdeti.HasValue && parcaAdeti.HasValue && parcaAdeti.Value > 0)
+            {
+                var besleyici = await _context.Stoklar
+                    .Where(s => s.StokKodu == besleyiciStokKodu)
+                    .Select(s => new
+                    {
+                        StokTipi = s.StokTipi,
+                        StokAdi = s.StokAdi,
+                        StokKodu = s.StokKodu,
+                        Miktar = (decimal)besleyiciAdeti.Value / parcaAdeti.Value, // Besleyici Adeti / Parça Adeti
+                        Birim = "ADET",
+                        Kaynak = "Besleyici"
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (besleyici != null)
+                {
+                    result.Add(besleyici);
+                }
+            }
+
+            return Json(result);
         }
     }
 }

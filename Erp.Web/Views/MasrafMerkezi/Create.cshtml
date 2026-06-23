@@ -12,23 +12,36 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <!-- Kod - Otomatik, readonly -->
             <div class="form-group mb-3">
                 <label asp-for="Kod" class="control-label"></label>
-                <input asp-for="Kod" class="form-control" />
-                <span asp-validation-for="Kod" class="text-danger"></span>
+                <input asp-for="Kod" class="form-control" readonly style="background-color: #e9ecef;" value="@ViewBag.YeniKod" />
+                <small class="form-text text-muted">Otomatik oluşturulacak</small>
             </div>
 
+            <!-- Ad - Otomatik tamamlama yok -->
             <div class="form-group mb-3">
                 <label asp-for="Ad" class="control-label"></label>
-                <input asp-for="Ad" class="form-control" />
+                <input asp-for="Ad" class="form-control" autocomplete="off" />
                 <span asp-validation-for="Ad" class="text-danger"></span>
             </div>
 
+            <!-- Ana Grup - Dropdown -->
             <div class="form-group mb-3">
-                <label asp-for="UstMasrafMerkezi" class="control-label"></label>
-                <input asp-for="UstMasrafMerkezi" class="form-control" placeholder="Üst masraf merkezi kodu" />
+                <label asp-for="AnaGrup" class="control-label"></label>
+                <select asp-for="AnaGrup" class="form-control">
+                    <option value="">Seçiniz</option>
+                    @if (ViewBag.AnaGruplari != null)
+                    {
+                        foreach (var item in ViewBag.AnaGruplari)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
             </div>
 
+            <!-- Durum -->
             <div class="form-group mb-3">
                 <label asp-for="Durum" class="control-label"></label>
                 <select asp-for="Durum" class="form-control">
@@ -38,6 +51,7 @@
                 <span asp-validation-for="Durum" class="text-danger"></span>
             </div>
 
+            <!-- Açıklama -->
             <div class="form-group mb-3">
                 <label asp-for="Aciklama" class="control-label"></label>
                 <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>

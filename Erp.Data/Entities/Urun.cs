@@ -18,6 +18,12 @@ namespace Erp.Data.Entities
         [MaxLength(100)]
         public string UrunAdi { get; set; } = string.Empty;
 
+        [MaxLength(20)]
+        public string? MusteriKisaAd { get; set; }  // CariKisaAd ile eşleşecek
+
+        //[ForeignKey("MusteriKisaAd")]
+        //public virtual Cari? Musteri { get; set; }
+
         [Display(Name = "Alaşım")]
         [MaxLength(50)]
         public string? Alasim { get; set; }
@@ -38,6 +44,11 @@ namespace Erp.Data.Entities
         [Display(Name = "Kalıp Cinsi")]
         [MaxLength(50)]
         public string? KalipCinsi { get; set; }
+
+        [Required(ErrorMessage = "Kalıp ağırlığı zorunludur")]
+        [Display(Name = "Kalıp Ağırlığı (kg)")]
+        [Column(TypeName = "decimal(18,3)")]
+        public decimal KalipAgirligi { get; set; } = 0;
 
         [Display(Name = "Parça Adeti/Kalıp")]
         public int? UrunParcaAdeti { get; set; }
@@ -65,8 +76,9 @@ namespace Erp.Data.Entities
 
         // Navigation Properties
         public virtual ICollection<UrunErgitmeRecete> ErgitmeReceteleri { get; set; } = new List<UrunErgitmeRecete>();
-        public virtual ICollection<UrunMacaRecete> MacaReceteleri { get; set; } = new List<UrunMacaRecete>();
+        public virtual ICollection<KalipRecete> KalipReceteleri { get; set; } = new List<KalipRecete>();
         public virtual ICollection<UrunIslemeRecete> IslemeReceteleri { get; set; } = new List<UrunIslemeRecete>();
         public virtual ICollection<UrunBom> UrunBomlar { get; set; } = new List<UrunBom>();
+        public virtual ICollection<MacaRecete> MacaReceteleri { get; set; } = new List<MacaRecete>();
     }
 }

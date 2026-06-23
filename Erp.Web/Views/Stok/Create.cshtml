@@ -14,13 +14,7 @@
 
             <!-- Stok Kodu ve Stok Adı -->
             <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="StokKodu" class="control-label"></label>
-                        <input asp-for="StokKodu" class="form-control" />
-                        <span asp-validation-for="StokKodu" class="text-danger"></span>
-                    </div>
-                </div>
+                
                 <div class="col-md-6">
                     <div class="form-group mb-3">
                         <label asp-for="StokAdi" class="control-label"></label>
@@ -36,14 +30,25 @@
                     <div class="form-group mb-3">
                         <label asp-for="StokTipi" class="control-label"></label>
                         <select asp-for="StokTipi" class="form-control">
-                            <option value="Hammadde">Hammadde</option>
-                            <option value="Sarf">Sarf</option>
-                            <option value="Hizmet">Hizmet</option>
-                            <option value="Demirbaş">Demirbaş</option>
-                            <option value="Yarı Mamul">Yarı Mamul</option>
-                            <option value="Mamul">Mamul</option>
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.StokTipleri != null)
+                            {
+                                foreach (var item in ViewBag.StokTipleri)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
                         </select>
                         <span asp-validation-for="StokTipi" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="BesleyiciMi" />
+                            <label class="form-check-label" asp-for="BesleyiciMi">
+                                Besleyici Sarfı
+                            </label>
+                            <small class="form-text text-muted">Bu stok kalemi besleyici olarak kullanılacaksa işaretleyin.</small>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -61,20 +66,63 @@
                 </div>
             </div>
 
-            <!-- Ana Grup ve Alt Grup -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="AnaGrup" class="control-label"></label>
-                        <input asp-for="AnaGrup" class="form-control" placeholder="Örn: Hammadde, Mamul, Yardımcı" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="AltGrup" class="control-label"></label>
-                        <input asp-for="AltGrup" class="form-control" placeholder="Örn: Döküm, Torna, Boya" />
-                    </div>
-                </div>
+            <!-- Masraf Merkezi -->
+            <div class="form-group mb-3">
+                <label asp-for="MasrafMerkezi" class="control-label"></label>
+                <select asp-for="MasrafMerkezi" class="form-control" id="MasrafMerkezi" onchange="getAnaGrup(this)">
+                    <option value="">Seçiniz</option>
+                    @if (ViewBag.MasrafMerkezleri != null)
+                    {
+                        foreach (var item in ViewBag.MasrafMerkezleri)
+                        {
+                            if (Model?.MasrafMerkezi == item.Ad)
+                            {
+                                <option value="@item.Ad" data-anagrup="@item.AnaGrup" selected>@item.Ad (@item.Kod)</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Ad" data-anagrup="@item.AnaGrup">@item.Ad (@item.Kod)</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Ana Grup (Otomatik doldurulacak) -->
+            <div class="form-group mb-3">
+                <label asp-for="AnaGrup" class="control-label"></label>
+                <input asp-for="AnaGrup" class="form-control" id="AnaGrup" readonly style="background-color: #e9ecef;" />
+                <small class="form-text text-muted">Masraf merkezi seçildiğinde otomatik doldurulur.</small>
+            </div>
+
+            <!-- Alt Grup -->
+            <div class="form-group mb-3">
+                <label asp-for="AltGrup" class="control-label"></label>
+                <select asp-for="AltGrup" class="form-control">
+                    <option value="">Seçiniz</option>
+                    @if (ViewBag.AltGruplari != null)
+                    {
+                        foreach (var item in ViewBag.AltGruplari)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Gider Kategorisi -->
+            <div class="form-group mb-3">
+                <label asp-for="GiderKategorisi" class="control-label"></label>
+                <select asp-for="GiderKategorisi" class="form-control">
+                    <option value="">Seçiniz</option>
+                    @if (ViewBag.GiderKategorileri != null)
+                    {
+                        foreach (var item in ViewBag.GiderKategorileri)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    }
+                </select>
             </div>
 
             <!-- Fiyat Bilgileri -->
@@ -154,18 +202,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label asp-for="GiderKategorisi" class="control-label"></label>
-                        <input asp-for="GiderKategorisi" class="form-control" placeholder="Örn: Üretim, Satış, Yönetim" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Masraf Merkezi -->
-            <div class="form-group mb-3">
-                <label asp-for="MasrafMerkezi" class="control-label"></label>
-                <input asp-for="MasrafMerkezi" class="form-control" placeholder="Örn: Ergime, Maçahane, Kalıphane" />
             </div>
 
             <!-- Açıklama -->
@@ -188,4 +224,22 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // ==========================================
+        // MASRAF MERKEZİ SEÇİNCE ANA GRUBU DOLDUR
+        // ==========================================
+        function getAnaGrup(select) {
+            var selected = select.options[select.selectedIndex];
+            var anaGrup = selected.getAttribute('data-anagrup') || '';
+            document.getElementById('AnaGrup').value = anaGrup;
+        }
+
+        $(document).ready(function () {
+            var select = document.getElementById('MasrafMerkezi');
+            if (select) {
+                getAnaGrup(select);
+            }
+        });
+    </script>
 }

@@ -169,9 +169,11 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="CariKodu" />
+        <div class="mt-3">
+            <input type="submit" value="Sil" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+        </div>
     </form>
 </div>

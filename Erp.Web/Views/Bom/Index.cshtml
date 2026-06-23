@@ -61,11 +61,11 @@
                 malzemeler.Add((item.StokKodu ?? "-", item.StokAdi ?? "-", item.Miktar, item.Birim ?? "-", "Ergitme"));
             }
 
-            // Maça Reçeteleri
-            foreach (var item in urun.MacaReceteleri ?? Enumerable.Empty<Erp.Data.Entities.UrunMacaRecete>())
-            {
-                malzemeler.Add((item.MacaKodu ?? "-", item.MacaAdi ?? "-", item.KumTuketimi, "KG", "Maça"));
-            }
+                // Maça Reçeteleri (Yeni Model)
+                foreach (var item in urun.MacaReceteleri ?? Enumerable.Empty<Erp.Data.Entities.MacaRecete>())
+                {
+                    malzemeler.Add((item.MacaKodu ?? "-", item.MacaAdi ?? "-", item.KullanimAdedi ?? 0, "ADET", "Maça"));
+                }
 
             // İşleme Reçeteleri
             foreach (var item in urun.IslemeReceteleri ?? Enumerable.Empty<Erp.Data.Entities.UrunIslemeRecete>())

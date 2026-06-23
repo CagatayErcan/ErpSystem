@@ -1,0 +1,414 @@
+﻿@model Erp.Data.Entities.SatisSiparis
+
+@{
+    ViewData["Title"] = "Satış Siparişi Düzenle";
+}
+
+<h1><i class="fas fa-edit text-warning"></i> Satış Siparişi Düzenle</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" method="post" id="siparisForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="SiparisNo" />
+            <input type="hidden" asp-for="OlusturmaTarihi" />
+
+            <!-- Sipariş Bilgileri -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Sipariş Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Sipariş No</label>
+                                <input type="text" class="form-control" value="@Model.SiparisNo" readonly style="background-color: #e9ecef;" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label asp-for="SiparisTarihi" class="control-label"></label>
+                                <input asp-for="SiparisTarihi" class="form-control" type="date" />
+                                <span asp-validation-for="SiparisTarihi" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="control-label">Müşteri</label>
+                                <select class="form-control" id="CariSecim" name="CariKodu">
+                                    <option value="">Seçiniz</option>
+                                    @if (ViewBag.CariListesi != null)
+                                    {
+                                        foreach (var cari in ViewBag.CariListesi)
+                                        {
+                                            <option value="@cari.CariKisaAd">@cari.CariKisaAd</option>
+                                        }
+                                    }
+                                </select>
+                                <input type="hidden" asp-for="CariKodu" id="CariKodu" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="MusteriSiparisNo" class="control-label"></label>
+                                <input asp-for="MusteriSiparisNo" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="TerminTarihi" class="control-label"></label>
+                                <input asp-for="TerminTarihi" class="form-control" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="SatisTemsilcisi" class="control-label"></label>
+                                <input asp-for="SatisTemsilcisi" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="DovizTuru" class="control-label"></label>
+                                <select asp-for="DovizTuru" class="form-control">
+                                    <option value="TL">TL</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="OdemeSekli" class="control-label"></label>
+                                <select asp-for="OdemeSekli" class="form-control">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Peşin">Peşin</option>
+                                    <option value="Vadeli">Vadeli</option>
+                                    <option value="Çek">Çek</option>
+                                    <option value="Senet">Senet</option>
+                                    <option value="EFT">EFT</option>
+                                    <option value="Havale">Havale</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label asp-for="TeslimatSekli" class="control-label"></label>
+                                <select asp-for="TeslimatSekli" class="form-control">
+                                    <option value="">Seçiniz</option>
+                                    <option value="EXW">EXW (Fabrika Teslimi)</option>
+                                    <option value="FCA">FCA (Taşıyıcıya Teslim)</option>
+                                    <option value="FOB">FOB (Gemi Bordasında Teslim)</option>
+                                    <option value="CIF">CIF (Maliyet, Sigorta ve Navlun)</option>
+                                    <option value="DAP">DAP (Belirlenen Yerde Teslim)</option>
+                                    <option value="DDP">DDP (Gümrük Vergisi Ödenmiş Teslim)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="TeslimatAdresi" class="control-label"></label>
+                        <textarea asp-for="TeslimatAdresi" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sipariş Kalemleri -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Sipariş Kalemleri</h5>
+                    <button type="button" class="btn btn-light btn-sm" onclick="satirEkle()">
+                        <i class="fas fa-plus"></i> Satır Ekle
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="detayTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width:5%;">Sıra No</th>
+                                    <th style="width:25%;">Ürün</th>
+                                    <th style="width:12%;">Miktar</th>
+                                    <th style="width:8%;">Birim</th>
+                                    <th style="width:15%;">Birim Fiyat</th>
+                                    <th style="width:10%;">İskonto %</th>
+                                    <th style="width:8%;">KDV %</th>
+                                    <th style="width:15%;">KDV Hariç Toplam</th>
+                                    <th style="width:7%;">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detayTbody">
+                                @if (Model.Detaylar != null && Model.Detaylar.Any())
+                                {
+                                    int index = 0;
+                                    foreach (var item in Model.Detaylar)
+                                    {
+                                        <tr>
+                                            <td class="text-center sira-no">@(index + 1)</td>
+                                            <td>
+                                                <select class="form-control form-control-sm urun-sec" name="Detaylar[@index].StokId" onchange="urunSecildi(this)">
+                                                    <option value="">Seçiniz</option>
+                                                    @if (ViewBag.Urunler != null)
+                                                    {
+                                                        foreach (var urun in ViewBag.Urunler)
+                                                        {
+                                                            if (item.StokId == urun.Id)
+                                                            {
+                                                                <option value="@urun.Id" selected>@urun.UrunKodu - @urun.UrunAdi</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@urun.Id">@urun.UrunKodu - @urun.UrunAdi</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" step="any" name="Detaylar[@index].Miktar" class="form-control form-control-sm miktar" value="@item.Miktar" onchange="satirHesapla(this)" />
+                                            </td>
+                                            <td>
+                                                <select class="form-control form-control-sm" name="Detaylar[@index].Birim">
+                                                    @if (item.Birim == "KG")
+                                                    {
+                                                        <option value="KG" selected>KG</option>
+                                                        <option value="ADET">ADET</option>
+                                                        <option value="LT">LT</option>
+                                                    }
+                                                    else if (item.Birim == "ADET")
+                                                    {
+                                                        <option value="KG">KG</option>
+                                                        <option value="ADET" selected>ADET</option>
+                                                        <option value="LT">LT</option>
+                                                    }
+                                                    else if (item.Birim == "LT")
+                                                    {
+                                                        <option value="KG">KG</option>
+                                                        <option value="ADET">ADET</option>
+                                                        <option value="LT" selected>LT</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="KG">KG</option>
+                                                        <option value="ADET">ADET</option>
+                                                        <option value="LT">LT</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" step="any" name="Detaylar[@index].BirimFiyat" class="form-control form-control-sm birim-fiyat" value="@item.BirimFiyat" onchange="satirHesapla(this)" />
+                                            </td>
+                                            <td>
+                                                <input type="number" step="any" name="Detaylar[@index].IskontoOrani" class="form-control form-control-sm iskonto" value="@item.IskontoOrani" onchange="satirHesapla(this)" />
+                                            </td>
+                                            <td>
+                                                <select class="form-control form-control-sm" name="Detaylar[@index].KdvOrani">
+                                                    @if (item.KdvOrani == 0)
+                                                    {
+                                                        <option value="0" selected>%0</option>
+                                                        <option value="1">%1</option>
+                                                        <option value="10">%10</option>
+                                                        <option value="20">%20</option>
+                                                    }
+                                                    else if (item.KdvOrani == 1)
+                                                    {
+                                                        <option value="0">%0</option>
+                                                        <option value="1" selected>%1</option>
+                                                        <option value="10">%10</option>
+                                                        <option value="20">%20</option>
+                                                    }
+                                                    else if (item.KdvOrani == 10)
+                                                    {
+                                                        <option value="0">%0</option>
+                                                        <option value="1">%1</option>
+                                                        <option value="10" selected>%10</option>
+                                                        <option value="20">%20</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="0">%0</option>
+                                                        <option value="1">%1</option>
+                                                        <option value="10">%10</option>
+                                                        <option value="20" selected>%20</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm satir-toplam" readonly style="background-color: #e9ecef;" value="@item.SatirToplami.ToString("F2")" />
+                                            </td>
+                                            <td class="text-center">
+                                                <i class="fas fa-trash text-danger satir-sil" onclick="satirSil(this)"></i>
+                                            </td>
+                                        </tr>
+                                        index++;
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="7" class="text-end fw-bold">Genel Toplam:</td>
+                                    <td colspan="2" class="fw-bold" id="genelToplam">
+                                        @((Model.Detaylar?.Sum(d => d.SatirToplami) ?? 0).ToString("N2"))
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Açıklama ve Butonlar -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label asp-for="Aciklama" class="control-label"></label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <input type="submit" value="Güncelle" class="btn btn-primary btn-lg" />
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">Listeye Dön</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        var tumUrunler = @Html.Raw(Json.Serialize(ViewBag.Urunler));
+
+        $(document).ready(function () {
+            $('#CariSecim').change(function () {
+                var cariKisaAd = $(this).val() || '';
+                $('#CariKodu').val(cariKisaAd);
+                
+                // Müşteri değiştiğinde mevcut satırları temizle
+                $('#detayTbody').empty();
+                genelToplamHesapla();
+            });
+
+            // Sayfa yüklendiğinde sıra numaralarını güncelle
+            updateSiraNo();
+        });
+
+        function satirEkle() {
+            var tbody = document.getElementById('detayTbody');
+            var row = tbody.insertRow();
+            var index = tbody.rows.length - 1;
+            var seciliMusteri = $('#CariSecim').val();
+
+            // Müşteriye göre ürünleri filtrele
+            var urunler = tumUrunler;
+            if (seciliMusteri) {
+                urunler = tumUrunler.filter(u => u.musteriKisaAd === seciliMusteri || u.musteriKisaAd === null || u.musteriKisaAd === '');
+            }
+
+            row.innerHTML = `
+                <td class="text-center sira-no">${index + 1}</td>
+                <td>
+                    <select class="form-control form-control-sm urun-sec" name="Detaylar[${index}].StokId" onchange="urunSecildi(this)">
+                        <option value="">Seçiniz</option>
+                        ${urunler.map(u => `<option value="${u.id}">${u.urunKodu} - ${u.urunAdi}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="any" name="Detaylar[${index}].Miktar" class="form-control form-control-sm miktar" value="1" onchange="satirHesapla(this)" />
+                </td>
+                <td>
+                    <select class="form-control form-control-sm" name="Detaylar[${index}].Birim">
+                        <option value="KG">KG</option>
+                        <option value="ADET">ADET</option>
+                        <option value="LT">LT</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="any" name="Detaylar[${index}].BirimFiyat" class="form-control form-control-sm birim-fiyat" value="0" onchange="satirHesapla(this)" />
+                </td>
+                <td>
+                    <input type="number" step="any" name="Detaylar[${index}].IskontoOrani" class="form-control form-control-sm iskonto" value="0" onchange="satirHesapla(this)" />
+                </td>
+                <td>
+                    <select class="form-control form-control-sm" name="Detaylar[${index}].KdvOrani">
+                        <option value="0">%0</option>
+                        <option value="1">%1</option>
+                        <option value="10">%10</option>
+                        <option value="20" selected>%20</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm satir-toplam" readonly style="background-color: #e9ecef;" />
+                </td>
+                <td class="text-center">
+                    <i class="fas fa-trash text-danger satir-sil" onclick="satirSil(this)"></i>
+                </td>
+            `;
+
+            updateSiraNo();
+        }
+
+        function satirSil(element) {
+            var row = element.closest('tr');
+            row.remove();
+            genelToplamHesapla();
+            updateSiraNo();
+        }
+
+        function updateSiraNo() {
+            $('#detayTbody tr').each(function (index) {
+                $(this).find('.sira-no').text(index + 1);
+            });
+        }
+
+        function urunSecildi(select) {
+            var row = select.closest('tr');
+            row.querySelector('.birim-fiyat').value = 0;
+            satirHesapla(row.querySelector('.birim-fiyat'));
+        }
+
+        function satirHesapla(element) {
+            var row = element.closest('tr');
+            var miktar = parseFloat(row.querySelector('.miktar').value) || 0;
+            var birimFiyat = parseFloat(row.querySelector('.birim-fiyat').value) || 0;
+            var iskonto = parseFloat(row.querySelector('.iskonto').value) || 0;
+            var kdv = parseFloat(row.querySelector('select[name$=".KdvOrani"]').value) || 0;
+
+            // KDV Hariç Toplam (Miktar x Birim Fiyat) - İskonto
+            var araToplam = miktar * birimFiyat;
+            var iskontoTutari = araToplam * (iskonto / 100);
+            var netToplam = araToplam - iskontoTutari;  // KDV Hariç
+
+            // KDV Tutarı (sadece bilgi amaçlı)
+            var kdvTutari = netToplam * (kdv / 100);
+            var genelToplam = netToplam + kdvTutari;   // KDV Dahil
+
+            row.querySelector('.satir-toplam').value = netToplam.toFixed(2);
+            row.querySelector('.kdv-tutari').value = kdvTutari.toFixed(2);
+
+            genelToplamHesapla();
+        }
+
+        function genelToplamHesapla() {
+            var toplam = 0;
+            document.querySelectorAll('.satir-toplam').forEach(function (input) {
+                toplam += parseFloat(input.value) || 0;
+            });
+            document.getElementById('genelToplam').textContent = toplam.toFixed(2);
+        }
+    </script>
+}

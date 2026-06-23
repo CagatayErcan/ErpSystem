@@ -1,124 +1,248 @@
 ﻿@model Erp.Data.Entities.Stok
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Stok Düzenle";
 }
 
-<h1>Edit</h1>
-
-<h4>Stok</h4>
+<h1>Stok Düzenle</h1>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="StokKodu" class="control-label"></label>
-                <input asp-for="StokKodu" class="form-control" />
-                <span asp-validation-for="StokKodu" class="text-danger"></span>
+            <input type="hidden" asp-for="OlusturmaTarihi" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="StokKodu" class="control-label"></label>
+                        <input asp-for="StokKodu" class="form-control" readonly style="background-color: #e9ecef;" />
+                        <span asp-validation-for="StokKodu" class="text-danger"></span>
+                        <small class="form-text text-muted">Stok kodu otomatik oluşturulur ve değiştirilemez.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="StokAdi" class="control-label"></label>
+                        <input asp-for="StokAdi" class="form-control" />
+                        <span asp-validation-for="StokAdi" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="StokAdi" class="control-label"></label>
-                <input asp-for="StokAdi" class="form-control" />
-                <span asp-validation-for="StokAdi" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="StokTipi" class="control-label"></label>
+                        <select asp-for="StokTipi" class="form-control">
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.StokTipleri != null)
+                            {
+                                foreach (var tip in ViewBag.StokTipleri)
+                                {
+                                    <option value="@tip">@tip</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="StokTipi" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="BesleyiciMi" />
+                            <label class="form-check-label" asp-for="BesleyiciMi">
+                                Besleyici Sarfı
+                            </label>
+                            <small class="form-text text-muted">Bu stok kalemi besleyici olarak kullanılacaksa işaretleyin.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="AnaBirim" class="control-label"></label>
+                        <select asp-for="AnaBirim" class="form-control">
+                            <option value="KG">Kilogram (KG)</option>
+                            <option value="ADET">Adet</option>
+                            <option value="LT">Litre (LT)</option>
+                            <option value="M3">Metreküp (M3)</option>
+                            <option value="SAAT">Saat</option>
+                        </select>
+                        <span asp-validation-for="AnaBirim" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AnaGrup" class="control-label"></label>
-                <input asp-for="AnaGrup" class="form-control" />
-                <span asp-validation-for="AnaGrup" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Masraf Merkezi -->
+                    <div class="form-group mb-3">
+                        <label asp-for="MasrafMerkezi" class="control-label"></label>
+                        <select asp-for="MasrafMerkezi" class="form-control" id="MasrafMerkezi" onchange="getAnaGrup(this)">
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.MasrafMerkezleri != null)
+                            {
+                                foreach (var item in ViewBag.MasrafMerkezleri)
+                                {
+                                    if (Model?.MasrafMerkezi == item.Ad)
+                                    {
+                                        <option value="@item.Ad" data-anagrup="@item.AnaGrup" selected>@item.Ad (@item.Kod)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Ad" data-anagrup="@item.AnaGrup">@item.Ad (@item.Kod)</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Ana Grup (Otomatik doldurulacak) -->
+                    <div class="form-group mb-3">
+                        <label asp-for="AnaGrup" class="control-label"></label>
+                        <input asp-for="AnaGrup" class="form-control" id="AnaGrup" readonly style="background-color: #e9ecef;" />
+                        <small class="form-text text-muted">Masraf merkezi seçildiğinde otomatik doldurulur.</small>
+                    </div>
+
+                    <!-- Alt Grup -->
+                    <div class="form-group mb-3">
+                        <label asp-for="AltGrup" class="control-label"></label>
+                        <select asp-for="AltGrup" class="form-control">
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.AltGruplari != null)
+                            {
+                                foreach (var item in ViewBag.AltGruplari)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AltGrup" class="control-label"></label>
-                <input asp-for="AltGrup" class="form-control" />
-                <span asp-validation-for="AltGrup" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="SonAlisFiyati" class="control-label"></label>
+                        <input asp-for="SonAlisFiyati" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="SonAlisFiyati" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="SatisFiyati" class="control-label"></label>
+                        <input asp-for="SatisFiyati" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="SatisFiyati" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="KdvOrani" class="control-label"></label>
+                        <select asp-for="KdvOrani" class="form-control">
+                            <option value="0">%0</option>
+                            <option value="1">%1</option>
+                            <option value="10">%10</option>
+                            <option value="20">%20</option>
+                        </select>
+                        <span asp-validation-for="KdvOrani" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="StokTipi" class="control-label"></label>
-                <input asp-for="StokTipi" class="form-control" />
-                <span asp-validation-for="StokTipi" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="MinimumStok" class="control-label"></label>
+                        <input asp-for="MinimumStok" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="MinimumStok" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="KritikStok" class="control-label"></label>
+                        <input asp-for="KritikStok" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="KritikStok" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AnaBirim" class="control-label"></label>
-                <input asp-for="AnaBirim" class="form-control" />
-                <span asp-validation-for="AnaBirim" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="VarsayilanTedarikci" class="control-label"></label>
+                        <input asp-for="VarsayilanTedarikci" class="form-control" placeholder="Varsayılan tedarikçi adı" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="AlternatifTedarikci" class="control-label"></label>
+                        <input asp-for="AlternatifTedarikci" class="form-control" placeholder="Alternatif tedarikçi adı" />
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="VarsayilanTedarikci" class="control-label"></label>
-                <input asp-for="VarsayilanTedarikci" class="form-control" />
-                <span asp-validation-for="VarsayilanTedarikci" class="text-danger"></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="MaliyetTuru" class="control-label"></label>
+                        <select asp-for="MaliyetTuru" class="form-control">
+                            <option value="">Seçiniz</option>
+                            <option value="Standart">Standart Maliyet</option>
+                            <option value="Ortalama">Ortalama Maliyet</option>
+                            <option value="FIFO">FIFO (İlk Giren İlk Çıkar)</option>
+                        </select>
+                    </div>
+                </div>
+                    <!-- Gider Kategorisi -->
+                    <div class="form-group mb-3">
+                        <label asp-for="GiderKategorisi" class="control-label"></label>
+                        <select asp-for="GiderKategorisi" class="form-control">
+                            <option value="">Seçiniz</option>
+                            @if (ViewBag.GiderKategorileri != null)
+                            {
+                                foreach (var item in ViewBag.GiderKategorileri)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </select>
+                    </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AlternatifTedarikci" class="control-label"></label>
-                <input asp-for="AlternatifTedarikci" class="form-control" />
-                <span asp-validation-for="AlternatifTedarikci" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SonAlisFiyati" class="control-label"></label>
-                <input asp-for="SonAlisFiyati" class="form-control" />
-                <span asp-validation-for="SonAlisFiyati" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SatisFiyati" class="control-label"></label>
-                <input asp-for="SatisFiyati" class="form-control" />
-                <span asp-validation-for="SatisFiyati" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="KdvOrani" class="control-label"></label>
-                <input asp-for="KdvOrani" class="form-control" />
-                <span asp-validation-for="KdvOrani" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinimumStok" class="control-label"></label>
-                <input asp-for="MinimumStok" class="form-control" />
-                <span asp-validation-for="MinimumStok" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="KritikStok" class="control-label"></label>
-                <input asp-for="KritikStok" class="form-control" />
-                <span asp-validation-for="KritikStok" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GiderKategorisi" class="control-label"></label>
-                <input asp-for="GiderKategorisi" class="form-control" />
-                <span asp-validation-for="GiderKategorisi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaliyetTuru" class="control-label"></label>
-                <input asp-for="MaliyetTuru" class="form-control" />
-                <span asp-validation-for="MaliyetTuru" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MasrafMerkezi" class="control-label"></label>
-                <input asp-for="MasrafMerkezi" class="form-control" />
-                <span asp-validation-for="MasrafMerkezi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Aciklama" class="control-label"></label>
-                <input asp-for="Aciklama" class="form-control" />
+                <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Stok ile ilgili ek açıklamalar..."></textarea>
                 <span asp-validation-for="Aciklama" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="OlusturmaTarihi" class="control-label"></label>
-                <input asp-for="OlusturmaTarihi" class="form-control" />
-                <span asp-validation-for="OlusturmaTarihi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GuncellemeTarihi" class="control-label"></label>
-                <input asp-for="GuncellemeTarihi" class="form-control" />
-                <span asp-validation-for="GuncellemeTarihi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Güncelle" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // ==========================================
+        // MASRAF MERKEZİ SEÇİNCE ANA GRUBU DOLDUR
+        // ==========================================
+        function getAnaGrup(select) {
+            var selected = select.options[select.selectedIndex];
+            var anaGrup = selected.getAttribute('data-anagrup') || '';
+            document.getElementById('AnaGrup').value = anaGrup;
+        }
+
+        $(document).ready(function () {
+            var select = document.getElementById('MasrafMerkezi');
+            if (select) {
+                getAnaGrup(select);
+            }
+        });
+    </script>
 }

@@ -17,9 +17,21 @@ namespace Erp.Data
         public DbSet<MasrafMerkezi> MasrafMerkezleri { get; set; }
         public DbSet<Urun> Urunler { get; set; }
         public DbSet<UrunErgitmeRecete> UrunErgitmeReceteleri { get; set; }
-        public DbSet<UrunMacaRecete> UrunMacaReceteleri { get; set; }
+        public DbSet<KalipRecete> KalipReceteleri { get; set; }
+        public DbSet<MacaRecete> MacaReceteleri { get; set; }
         public DbSet<UrunIslemeRecete> UrunIslemeReceteleri { get; set; }
         public DbSet<UrunBom> UrunBomlar { get; set; }
         public DbSet<UrunBomDetay> UrunBomDetaylar { get; set; }
+        public DbSet<AlasimHammaddeOranlari> AlasimHammaddeOranlari { get; set; }
+        public DbSet<KalipSarfOranlari> KalipSarfOranlari { get; set; }
+        public DbSet<MacaSarfOranlari> MacaSarfOranlari { get; set; }
+        public DbSet<EnerjiStandartlari> EnerjiStandartlari { get; set; }
+        public DbSet<IsMerkezi> IsMerkezleri { get; set; }
+        public DbSet<SatisSiparis> SatisSiparisleri { get; set; }
+        public DbSet<SatisSiparisDetay> SatisSiparisDetaylari { get; set; }
+        public DbSet<StokTipi> StokTipleri { get; set; }
+        public DbSet<AnaGrup> AnaGruplari { get; set; }
+        public DbSet<AltGrup> AltGruplari { get; set; }
+        public DbSet<GiderKategorisi> GiderKategorileri { get; set; }
     }
 }

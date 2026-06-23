@@ -154,6 +154,7 @@
                 <th>Ağırlık (kg)</th>
                 <th>Kalıp No</th>
                 <th>Kalıp Cinsi</th>
+                <th>Kalıp Ağırlığı (kg)</th>
                 <th>Parça Adedi</th>
                 <th>Çevrim Süresi</th>
                 <th>İşlemler</th>
@@ -182,6 +183,7 @@
                     <td>@item.UrunAgirligi.ToString("N3")</td>
                     <td>@item.UrunKalipNo</td>
                     <td>@item.KalipCinsi</td>
+                    <td>@item.KalipAgirligi.ToString("N3")</td>
                     <td>@item.UrunParcaAdeti</td>
                     <td>@item.KalipCevrimSuresi</td>
                     <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a> <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a> <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a></td>

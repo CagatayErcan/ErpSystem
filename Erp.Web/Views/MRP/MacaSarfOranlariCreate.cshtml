@@ -1,0 +1,267 @@
+﻿@model Erp.Data.Entities.MacaSarfOranlari
+
+@{
+    ViewData["Title"] = "Yeni Maça Sarf Oranı Ekle";
+}
+
+<style>
+    .satir-sil {
+        cursor: pointer;
+        color: red;
+    }
+
+        .satir-sil:hover {
+            color: darkred;
+        }
+</style>
+
+<h1>
+    <i class="fas fa-plus-circle text-success"></i>
+    Yeni Maça Sarf Oranı Ekle
+</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="MacaSarfOranlariCreate" method="post" id="macaForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Maça Cinsi Seçimi -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="MacaCinsi" class="control-label fw-bold"></label>
+                        <select asp-for="MacaCinsi" class="form-control" id="MacaCinsi" name="MacaCinsi">
+                            <option value="">Seçiniz</option>
+                            <option value="REÇİNELİ">REÇİNELİ</option>
+                            <option value="COLD BOX">COLD BOX</option>
+                            <option value="HOT BOX">HOT BOX</option>
+                            <option value="BEZİR YAĞLI">BEZİR YAĞLI</option>
+                        </select>
+                        <span asp-validation-for="MacaCinsi" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-8 d-flex align-items-end">
+                    <button type="button" class="btn btn-success" onclick="satirEkle()">
+                        <i class="fas fa-plus"></i> Satır Ekle
+                    </button>
+                    <button type="button" class="btn btn-secondary ms-2" onclick="ornekVeriDoldur()">
+                        <i class="fas fa-database"></i> Örnek Veri Doldur
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tablo -->
+            <div class="table-responsive">
+                <table class="table table-bordered" id="oranlarTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width:18%;">Stok Tipi</th>
+                            <th style="width:27%;">Sarf Adı</th>
+                            <th style="width:20%;">Sarf Kodu</th>
+                            <th style="width:15%;">Birim</th>
+                            <th style="width:20%;">Miktar (%)</th>
+                            <th style="width:10%;">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="oranlarTbody">
+                        <!-- JavaScript ile satırlar eklenecek -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Tümünü Kaydet" class="btn btn-primary btn-lg" />
+                <a asp-action="MacaSarfOranlari" class="btn btn-secondary btn-lg">Listeye Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // ==========================================
+        // SATIR EKLE
+        // ==========================================
+        function satirEkle() {
+            var tbody = document.getElementById('oranlarTbody');
+            var row = tbody.insertRow();
+            var index = tbody.rows.length - 1;
+
+            row.innerHTML = `
+                        <td>
+                            <select class="form-control form-control-sm stok-tipi" name="StokTipi[${index}]">
+                                <option value="">Seçiniz</option>
+                                    @if (ViewBag.StokTipleri != null)
+                                    {
+                                        foreach (var tip in ViewBag.StokTipleri)
+                                        {
+                                            <option value="@tip">@tip</option>
+                                        }
+                                    }
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control form-control-sm stok-adi" data-row="maca" name="SarfAdi[${index}]">
+                                <option value="">Önce Stok Tipi Seçin</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm stok-kodu" name="SarfKodu[${index}]" readonly />
+                        </td>
+                        <td>
+                            <select class="form-control form-control-sm" name="Birim[${index}]">
+                                <option value="KG">KG</option>
+                                <option value="LT">LT</option>
+                                <option value="ADET">ADET</option>
+                            </select>
+                        </td>
+                                <td>
+                                    <input type="number" step="any" name="Miktar[${index}]" class="form-control form-control-sm" placeholder="Örn: 2.5" />
+                                </td>
+                        <td class="text-center">
+                            <i class="fas fa-trash text-danger satir-sil" onclick="satirSil(this)"></i>
+                        </td>
+                    `;
+        }
+
+        // ==========================================
+        // SATIR SİL
+        // ==========================================
+        function satirSil(element) {
+            var row = element.closest('tr');
+            row.remove();
+        }
+
+        // ==========================================
+        // STOK TİPİNE GÖRE STOK ADLARINI GETİR
+        // ==========================================
+        $(document).on('change', '.stok-tipi', function () {
+            var row = $(this).closest('tr');
+            var stokTipi = $(this).val();
+            var stokAdiSelect = row.find('.stok-adi');
+            var stokKoduInput = row.find('.stok-kodu');
+
+            stokAdiSelect.empty();
+            stokAdiSelect.append('<option value="">Seçiniz</option>');
+
+            if (stokTipi) {
+                $.ajax({
+                    url: '/MRP/GetStoklarByTip',
+                    type: 'GET',
+                    data: { stokTipi: stokTipi },
+                    success: function (data) {
+                        $.each(data, function (index, item) {
+                            stokAdiSelect.append('<option value="' + item.stokAdi + '" data-stokkodu="' + item.stokKodu + '">' + item.stokAdi + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert('Stoklar yüklenirken bir hata oluştu.');
+                    }
+                });
+            }
+        });
+
+        // ==========================================
+        // STOK ADI SEÇİLDİĞİNDE STOK KODUNU DOLDUR
+        // ==========================================
+        $(document).on('change', '.stok-adi', function () {
+            var row = $(this).closest('tr');
+            var selectedOption = $(this).find('option:selected');
+            var stokKodu = selectedOption.data('stokkodu');
+            row.find('.stok-kodu').val(stokKodu || '');
+        });
+
+        // ==========================================
+        // ÖRNEK VERİ DOLDUR (REÇİNELİ için)
+        // ==========================================
+        function ornekVeriDoldur() {
+            var tbody = document.getElementById('oranlarTbody');
+            tbody.innerHTML = '';
+
+            var ornekVeriler = [
+                { tip: 'Sarf', ad: 'Reçine', kod: 'SRF-001', birim: 'KG', miktar: 2.0 },
+                { tip: 'Sarf', ad: 'Sertleştirici', kod: 'SRF-002', birim: 'KG', miktar: 0.8 }
+            ];
+
+            ornekVeriler.forEach(function (item, index) {
+                var row = tbody.insertRow();
+                row.innerHTML = `
+                            <td>
+                                <select class="form-control form-control-sm stok-tipi" data-row="maca" name="StokTipi[${index}]">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Hammadde" ${item.tip === 'Hammadde' ? 'selected' : ''}>Hammadde</option>
+                                    <option value="Sarf" ${item.tip === 'Sarf' ? 'selected' : ''}>Sarf</option>
+                                    <option value="Hizmet" ${item.tip === 'Hizmet' ? 'selected' : ''}>Hizmet</option>
+                                    <option value="Demirbaş" ${item.tip === 'Demirbaş' ? 'selected' : ''}>Demirbaş</option>
+                                    <option value="Yarı Mamul" ${item.tip === 'Yarı Mamul' ? 'selected' : ''}>Yarı Mamul</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control form-control-sm stok-adi" data-row="maca" name="SarfAdi[${index}]">
+                                    <option value="${item.ad}" data-stokkodu="${item.kod}">${item.ad}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm stok-kodu" name="SarfKodu[${index}]" value="${item.kod}" readonly />
+                            </td>
+                            <td>
+                                <select class="form-control form-control-sm" name="Birim[${index}]">
+                                    <option value="KG" ${item.birim === 'KG' ? 'selected' : ''}>KG</option>
+                                    <option value="LT" ${item.birim === 'LT' ? 'selected' : ''}>LT</option>
+                                    <option value="ADET" ${item.birim === 'ADET' ? 'selected' : ''}>ADET</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" step="any" name="Miktar[${index}]" class="form-control form-control-sm" value="${item.miktar}" />
+                            </td>
+                            <td class="text-center"><i class="fas fa-trash text-danger satir-sil" onclick="satirSil(this)"></i></td>
+                        `;
+            });
+
+            document.getElementById('MacaCinsi').value = 'REÇİNELİ';
+        }
+
+        // ==========================================
+        // FORM VALİDASYON
+        // ==========================================
+        document.getElementById('macaForm').addEventListener('submit', function (e) {
+            var macaCinsi = document.getElementById('MacaCinsi').value;
+            if (!macaCinsi) {
+                alert('Lütfen bir maça cinsi seçiniz.');
+                e.preventDefault();
+                return;
+            }
+
+            var rows = document.querySelectorAll('#oranlarTbody tr');
+            if (rows.length === 0) {
+                alert('Lütfen en az bir satır ekleyiniz.');
+                e.preventDefault();
+                return;
+            }
+
+            var valid = true;
+            rows.forEach(function (row) {
+                var inputs = row.querySelectorAll('input, select');
+                inputs.forEach(function (input) {
+                    if (!input.value.trim()) {
+                        valid = false;
+                        input.style.borderColor = 'red';
+                    } else {
+                        input.style.borderColor = '';
+                    }
+                });
+            });
+
+            if (!valid) {
+                alert('Lütfen tüm alanları doldurunuz.');
+                e.preventDefault();
+            }
+        });
+    </script>
+}

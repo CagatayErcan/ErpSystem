@@ -210,9 +210,6 @@
 <div class="toolbar">
     <a asp-action="Create" class="btn btn-primary btn-sm">Yeni Cari Ekle</a>
     <button id="clearAllFilters" class="btn btn-secondary btn-sm">Tüm Filtreleri Temizle</button>
-    <button id="excelBtn" class="btn-excel-custom btn-custom">Excel</button>
-    <button id="pdfBtn" class="btn-pdf-custom btn-custom">PDF</button>
-    <button id="printBtn" class="btn-print-custom btn-custom">Yazdır</button>
     <span id="filterCount" class="filter-badge">0 filtre aktif</span>
 </div>
 
@@ -308,7 +305,7 @@
                     <td>@item.RiskLimiti.ToString("N2")</td>
                     <td>@item.OlusturmaTarihi.ToString("dd.MM.yyyy")</td>
                     <td>@(item.GuncellemeTarihi?.ToString("dd.MM.yyyy") ?? "-")</td>
-                    <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a> <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a> <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a></td>
+                    <td><a asp-action="Edit" asp-route-id="@item.CariKodu" class="btn btn-sm btn-warning">Düzenle</a> <a asp-action="Details" asp-route-id="@item.CariKodu" class="btn btn-sm btn-info">Detay</a> <a asp-action="Delete" asp-route-id="@item.CariKodu" class="btn btn-sm btn-danger">Sil</a></td>
                 </tr>
             }
         </tbody>
@@ -316,10 +313,133 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- DataTable CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
 
-    <script src="~/js/cari.js"></script>
+    <!-- jQuery (DataTable için gerekli) -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTable JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTable Buttons JS -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <!-- DataTable FixedHeader JS -->
+    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+
+    <!-- Excel ve PDF için gerekli kütüphaneler -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#cariTable').DataTable({
+                scrollY: '60vh',
+                scrollX: true,
+                scrollCollapse: true,
+                fixedHeader: { header: true },
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json'
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel"></i> Excel',
+                        className: 'btn btn-success btn-sm',
+                        exportOptions: {
+                            columns: ':visible',
+                            orthogonal: 'export',
+                            format: {
+                                header: function (data, columnIdx) {
+                                    // Sadece gerçek başlıkları al (filtre satırını atla)
+                                    var header = $('#cariTable thead tr:first th').eq(columnIdx).text();
+                                    return header.trim();
+                                },
+                                body: function (data, row, column, node) {
+                                    // Badge içindeki metni temizle
+                                    if (data.includes('<span class="badge')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        return temp.textContent || temp.innerText || '';
+                                    }
+                                    // Select içindeki seçili değeri al
+                                    if (data.includes('<select')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        var select = temp.querySelector('select');
+                                        return select ? select.value : data;
+                                    }
+                                    // İşlemler sütunundaki linkleri temizle
+                                    if (data.includes('<a') && data.includes('href=')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        var links = temp.querySelectorAll('a');
+                                        links.forEach(function (link) {
+                                            var text = link.textContent || link.innerText || '';
+                                            link.replaceWith(text);
+                                        });
+                                        return temp.textContent || temp.innerText || data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf"></i> PDF',
+                        className: 'btn btn-danger btn-sm',
+                        exportOptions: {
+                            columns: ':visible',
+                            orthogonal: 'export',
+                            format: {
+                                header: function (data, columnIdx) {
+                                    var header = $('#cariTable thead tr:first th').eq(columnIdx).text();
+                                    return header.trim();
+                                },
+                                body: function (data, row, column, node) {
+                                    if (data.includes('<span class="badge')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        return temp.textContent || temp.innerText || '';
+                                    }
+                                    if (data.includes('<select')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        var select = temp.querySelector('select');
+                                        return select ? select.value : data;
+                                    }
+                                    if (data.includes('<a') && data.includes('href=')) {
+                                        var temp = document.createElement('div');
+                                        temp.innerHTML = data;
+                                        var links = temp.querySelectorAll('a');
+                                        links.forEach(function (link) {
+                                            var text = link.textContent || link.innerText || '';
+                                            link.replaceWith(text);
+                                        });
+                                        return temp.textContent || temp.innerText || data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print"></i> Yazdır',
+                        className: 'btn btn-secondary btn-sm'
+                    }
+                ],
+                pageLength: 25,
+                order: [[0, 'asc']]
+            });
+        });
+    </script>
 }

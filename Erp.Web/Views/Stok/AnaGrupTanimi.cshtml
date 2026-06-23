@@ -1,0 +1,87 @@
+﻿@model List<string>
+
+@{
+    ViewData["Title"] = "Ana Gruplar Tanımı";
+}
+
+<h1><i class="fas fa-tags"></i> Ana Gruplar Tanımı</h1>
+<hr />
+
+<div class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <div class="input-group">
+                <input type="text" id="newItem" class="form-control" placeholder="Yeni Ana Grup Ekle" />
+                <button class="btn btn-primary" onclick="addItem()"><i class="fas fa-plus"></i> Ekle</button>
+            </div>
+        </div>
+        <table class="table table-bordered" id="tanimTable">
+            <thead>
+                <tr>
+                    <th>Ana Grup</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteItem('@item')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">Henüz ana grup tanımlanmamış.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Stok Yönetimine Dön</a>
+</div>
+
+@section Scripts {
+    <script>
+        function addItem() {
+            var val = $('#newItem').val().trim();
+            if (!val) {
+                alert('Lütfen bir değer giriniz.');
+                return;
+            }
+
+            $.ajax({
+                url: '/Stok/AnaGrupTanimiEkle',
+                type: 'POST',
+                data: { item: val },
+                success: function () { location.reload(); },
+                error: function (xhr) {
+                    alert(xhr.responseText || 'Ekleme sırasında bir hata oluştu.');
+                }
+            });
+        }
+
+        function deleteItem(item) {
+            if (!confirm('"' + item + '" silinsin mi?')) return;
+
+            $.ajax({
+                url: '/Stok/AnaGrupTanimiSil',
+                type: 'POST',
+                data: { item: item },
+                success: function () { location.reload(); },
+                error: function (xhr) {
+                    alert(xhr.responseText || 'Silme sırasında bir hata oluştu.');
+                }
+            });
+        }
+    </script>
+}

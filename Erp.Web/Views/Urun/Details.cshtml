@@ -22,6 +22,9 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.UrunAdi)
         </dd>
+        <dt class="col-sm-2">Müşteri</dt>
+        <dd class="col-sm-10">@Model.MusteriKisaAd</dd>
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Alasim)
         </dt>
@@ -52,6 +55,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.KalipCinsi)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.KalipAgirligi)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.KalipAgirligi) kg
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UrunParcaAdeti)
         </dt>
@@ -64,17 +73,26 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.KalipCevrimSuresi)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.BesleyiciStokKodu)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BesleyiciStokKodu)
+        <dd class="col-sm-10">
+            @Model.BesleyiciStokKodu
+            @if (!string.IsNullOrEmpty(Model.BesleyiciStokKodu))
+            {
+                var besleyici = ViewBag.BesleyiciDetay as Erp.Data.Entities.Stok;
+                if (besleyici != null)
+                {
+                    <span class="text-muted">(@besleyici.StokAdi)</span>
+                }
+            }
         </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.BesleyiciAdeti)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BesleyiciAdeti)
+        <dd class="col-sm-10">
+            @Model.BesleyiciAdeti
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Aciklama)
@@ -113,8 +131,6 @@
                         <th>Stok Kodu</th>
                         <th>Miktar</th>
                         <th>Birim</th>
-                        <th>Elektrik (kWh)</th>
-                        <th>Ergitme Süresi (dk)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,19 +144,59 @@
                                 <td>@item.StokKodu</td>
                                 <td>@item.Miktar</td>
                                 <td>@item.Birim</td>
-                                <td>@item.BirimElektrikTuketimi</td>
-                                <td>@item.ErgitmeSuresi</td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Henüz ergitme reçetesi tanımlanmamış.</td>
+                            <td colspan="5" class="text-center text-muted">Henüz ergitme reçetesi tanımlanmamış.</td>
                         </tr>
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+    <!-- Kalıp Reçeteleri -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5>Kalıp Reçetesi</h5>
+        </div>
+        <div class="card-body">
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Stok Tipi</th>
+                            <th>Stok Adı</th>
+                            <th>Stok Kodu</th>
+                            <th>Miktar</th>
+                            <th>Birim</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.KalipReceteleri != null && Model.KalipReceteleri.Any())
+                        {
+                            foreach (var item in Model.KalipReceteleri)
+                            {
+                                <tr>
+                                    <td>@item.StokTipi</td>
+                                    <td>@item.StokAdi</td>
+                                    <td>@item.StokKodu</td>
+                                    <td>@item.Miktar</td>
+                                    <td>@item.Birim</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Henüz kalıp reçetesi tanımlanmamış.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!-- Maça Reçeteleri -->
@@ -149,46 +205,40 @@
             <h5>Maça Reçetesi</h5>
         </div>
         <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Maça Adı</th>
-                        <th>Maça Kodu</th>
-                        <th>Kullanım Adedi</th>
-                        <th>Maça Cinsi</th>
-                        <th>Kum (kg)</th>
-                        <th>Reçine (kg)</th>
-                        <th>CO₂ (kg)</th>
-                        <th>Amin Gazı (lt)</th>
-                        <th>Bezir Yağı (kg)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.MacaReceteleri != null && Model.MacaReceteleri.Any())
-                    {
-                        foreach (var item in Model.MacaReceteleri)
+            <div style="overflow-x: auto;">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Maça Adı</th>
+                            <th>Maça Kodu</th>
+                            <th>Kullanım Adedi</th>
+                            <th>Maça Cinsi</th>
+                            <th>Çevrim Süresi (dk)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.MacaReceteleri != null && Model.MacaReceteleri.Any())
+                        {
+                            foreach (var item in Model.MacaReceteleri)
+                            {
+                                <tr>
+                                    <td>@item.MacaAdi</td>
+                                    <td>@item.MacaKodu</td>
+                                    <td>@item.KullanimAdedi</td>
+                                    <td>@item.MacaCinsi</td>
+                                    <td>@item.MacaCevrimSuresi</td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>@item.MacaAdi</td>
-                                <td>@item.MacaKodu</td>
-                                <td>@item.MacaKullanimAdedi</td>
-                                <td>@item.MacaCinsi</td>
-                                <td>@item.KumTuketimi</td>
-                                <td>@item.RecineTuketimi</td>
-                                <td>@item.Co2Tuketimi</td>
-                                <td>@item.AminGazi</td>
-                                <td>@item.BezirYagiTuketimi</td>
+                                <td colspan="5" class="text-center text-muted">Henüz maça reçetesi tanımlanmamış.</td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="9" class="text-center text-muted">Henüz maça reçetesi tanımlanmamış.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!-- İşleme Reçeteleri -->
